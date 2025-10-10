@@ -3,7 +3,7 @@ import DeviceControlCard from '@/components/dashboard/device-control-card';
 import HistoricalDataChart from '@/components/dashboard/historical-data-chart';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FlaskConical, Beaker, Wind } from 'lucide-react';
+import { FlaskConical, Beaker, Wind, Biohazard, Molecule } from 'lucide-react';
 import AqiCircle from '@/components/dashboard/aqi-circle';
 
 
@@ -96,7 +96,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex items-start gap-3 rounded-lg bg-muted/50 p-4">
                   <div className="rounded-full bg-primary/10 p-2 text-primary">
-                    <Beaker className="h-6 w-6" />
+                    <Molecule className="h-6 w-6" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">CO₂</p>
@@ -110,7 +110,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex items-start gap-3 rounded-lg bg-muted/50 p-4">
                   <div className="rounded-full bg-primary/10 p-2 text-primary">
-                    <FlaskConical className="h-6 w-6" />
+                    <Biohazard className="h-6 w-6" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">VOCs</p>
