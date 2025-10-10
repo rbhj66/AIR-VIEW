@@ -18,7 +18,6 @@ const getColor = (value: number) => {
 
 export default function AqiCircle({ value }: AqiCircleProps) {
   const data = [{ name: 'AQI', value: value, fill: getColor(value) }];
-  const percentage = Math.round((value / MAX_AQI) * 100);
 
   return (
     <div className="relative h-48 w-48">
@@ -56,10 +55,10 @@ export default function AqiCircle({ value }: AqiCircleProps) {
       </RadialBarChart>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
         <span className="text-5xl font-bold text-foreground drop-shadow-sm">
-          {percentage}%
+          {value}
         </span>
         <span className="text-sm font-medium text-muted-foreground leading-tight">
-          Overall Air Quality
+          Live AQI
         </span>
       </div>
     </div>
