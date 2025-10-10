@@ -1,186 +1,201 @@
 /**
- * @fileOverview Firestore Security Rules for the AirView application.
- *
- * Core Philosophy:
- * This ruleset prioritizes a secure-by-default posture with path-based ownership for user data and explicit access control for shared resources.
- * It avoids complex `get()` calls by encouraging data denormalization where necessary for authorization.
+ * @fileOverview
+ * This ruleset enforces a strict user-ownership model for user-specific data and
+ * allows for controlled access to sensor data and air purifier devices. The
+ * primary goal is to secure data access based on user identity and relationships
+ * between entities, while remaining flexible on the specific data schemas during
+ * this prototyping phase.
  *
  * Data Structure:
- * - Users: /users/{userId} - Stores user profiles, accessible only by the user themselves.
- * - Sensors: /sensors/{sensorId} - Stores sensor data.  Potentially shared, but defaults to owner-only access for now.
- * - AirQualityReadings: /sensors/{sensorId}/readings/{readingId} - Air quality readings for each sensor, inherits sensor's access.
- * - AirPurifierDevices: /air_purifier_devices/{deviceId} - Stores air purifier devices. Potentially shared, but defaults to owner-only access for now.
- * - AirPurifierSettings: /users/{userId}/air_purifier_settings/{settingId} - User-specific air purifier settings.
- * - AirQualityPredictions: /sensors/{sensorId}/predictions/{predictionId} - Air quality predictions for each sensor, inherits sensor's access.
+ * - /users/{userId}: Stores user profiles, accessible only by the user themselves.
+ * - /sensors/{sensorId}: Stores sensor data. Access control may be extended to
+ *   support collaborative access in the future via a 'members' map.
+ * - /sensors/{sensorId}/readings/{readingId}: Stores air quality readings for a sensor,
+ *   inheriting authorization from the parent sensor.
+ * - /air_purifier_devices/{deviceId}: Stores air purifier device data. Access may
+ *   be extended to support shared access via a 'members' map.
+ * - /users/{userId}/air_purifier_settings/{settingId}: Stores user-specific air
+ *   purifier settings, accessible only by the user themselves.
+ * - /sensors/{sensorId}/predictions/{predictionId}: Stores air quality predictions
+ *   for a sensor, inheriting authorization from the parent sensor.
  *
  * Key Security Decisions:
- * - Strict user-ownership for data under `/users/{userId}`.
- * - Explicit denial of write access where ownership cannot be validated.
- * - Default to owner-only access for Sensors and AirPurifierDevices unless collaborative access is implemented.
- * - All writes require authentication (`request.auth != null`).
+ * - User data is strictly controlled by the user's ID in the path.
+ * - Sensor data access is currently open, but consider adding a membership map
+ *   for collaborative access in the future.
+ * - Subcollections inherit the access control of their parent documents.
+ * - Data schema validation is minimized to allow for rapid prototyping.
  *
  * Denormalization for Authorization:
- *  - If sensors or air purifier devices need to be shared, add a `members` map (e.g., `{ members: { 'user_abc': 'editor' } }`) to the document.  This allows for performant authorization rules without `get()` calls.
+ * - Consider denormalizing authorization data (e.g., sensor ownership) into
+ *   subcollection documents (readings, predictions) to avoid costly `get()` calls.
  *
  * Structural Segregation:
- *  - User-specific data (AirPurifierSettings) is stored under the `/users/{userId}` collection to leverage path-based ownership.
+ * - User-specific data (e.g., air purifier settings) is stored in user subcollections
+ *   to ensure clear ownership and prevent accidental public listing.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Controls access to user profile data.
+     * @description Controls access to user profiles.
      * @path /users/{userId}
-     * @allow (create) - Authenticated user can create their own profile.
-     * @allow (get, list, update, delete) - Authenticated user can access their own profile.
-     * @deny (create) - Unauthenticated user cannot create a profile.
-     * @deny (get, list, update, delete) - Authenticated user cannot access another user's profile.
-     * @principle Enforces user ownership of profile data via path-based authorization.
+     * @allow (create) User with ID 'user123' can create their profile.
+     * @deny (create) User with ID 'user456' cannot create a profile for 'user123'.
+     * @allow (get) User with ID 'user123' can read their profile.
+     * @deny (get) User with ID 'user456' cannot read the profile of 'user123'.
+     * @allow (update) User with ID 'user123' can update their profile.
+     * @deny (update) User with ID 'user456' cannot update the profile of 'user123'.
+     * @allow (delete) User with ID 'user123' can delete their profile.
+     * @deny (delete) User with ID 'user456' cannot delete the profile of 'user123'.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
      */
     match /users/{userId} {
-      // Helper function to check if the user is signed in and owns the document.
-      function isSignedIn() {
-        return request.auth != null;
-      }
+      // Helper function to check if the request is from the owner
       function isOwner(userId) {
-        return request.auth.uid == userId;
+        return request.auth != null && request.auth.uid == userId;
       }
       function isExistingOwner(userId) {
-        return isSignedIn() && isOwner(userId) && resource != null;
+        return isOwner(userId) && resource != null;
       }
 
       allow get: if isOwner(userId);
-      allow list: if false; // Users should not be able to list all user profiles.
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isExistingOwner(userId);
+      allow list: if false; // Listing users is not permitted
+
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id; // enforce immutable id
       allow delete: if isExistingOwner(userId);
     }
 
     /**
      * @description Controls access to sensor data.
      * @path /sensors/{sensorId}
-     * @allow (get, list) - Anyone can read sensor data.
-     * @allow (create, update, delete) - Only the owner can modify sensor data.
-     * @deny (create, update, delete) - If not authenticated or not the owner.
-     * @principle Public read, owner-only write for sensors.
+     * @allow (get) Any authenticated user can read sensor data.
+     * @deny (create) Non-authenticated user cannot create a sensor.
+     * @allow (create) Authenticated user can create a sensor.
+     * @deny (update) Non-authenticated user cannot update a sensor.
+     * @allow (update) Authenticated user can update a sensor.
+     * @deny (delete) Non-authenticated user cannot delete a sensor.
+     * @allow (delete) Authenticated user can delete a sensor.
+     * @principle Currently allows public read access, but consider adding a membership map
+     *            for collaborative access in the future.  Authenticated writes allowed for prototyping.
      */
     match /sensors/{sensorId} {
+      // Helper function to check if the request is authenticated
       function isSignedIn() {
         return request.auth != null;
       }
-        // NOTE: This is a placeholder.  In a real application, we would check for sensor ownership.
-      function isSensorOwner() {
-          return false; // TODO: Replace with actual sensor ownership logic (e.g., checking a members map or ownerId field).
-      }
-      function isExistingSensorOwner() {
-          return isSignedIn() && isSensorOwner() && resource != null;
-      }
 
       allow get, list: if true;
-      allow create: if isSignedIn() && isSensorOwner(); // TODO: Implement proper owner check on create.
-      allow update: if isExistingSensorOwner();
-      allow delete: if isExistingSensorOwner();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && resource != null;
+      allow delete: if isSignedIn() && resource != null;
     }
 
     /**
-     * @description Controls access to air quality readings for a sensor.
+     * @description Controls access to air quality readings for a specific sensor.
      * @path /sensors/{sensorId}/readings/{readingId}
-     * @allow (get, list) - Anyone can read air quality readings.
-     * @allow (create, update, delete) - Only the owner of the sensor can modify readings.
-     * @deny (create, update, delete) - If not authenticated or not the owner of the sensor.
-     * @principle Public read, owner-only write for air quality readings, inheriting sensor's ownership.
+     * @allow (get) Any authenticated user can read an air quality reading.
+     * @deny (create) Non-authenticated user cannot create an air quality reading.
+     * @allow (create) Authenticated user can create an air quality reading.
+     * @deny (update) Non-authenticated user cannot update an air quality reading.
+     * @allow (update) Authenticated user can update an air quality reading.
+     * @deny (delete) Non-authenticated user cannot delete an air quality reading.
+     * @allow (delete) Authenticated user can delete an air quality reading.
+     * @principle Currently allows public read access, but consider denormalizing sensor-level
+     *            authorization (e.g., sensor owner) into each reading for authorization independence.
      */
     match /sensors/{sensorId}/readings/{readingId} {
+      // Helper function to check if the request is authenticated
       function isSignedIn() {
         return request.auth != null;
       }
-        // NOTE: This is a placeholder.  In a real application, we would check for sensor ownership.
-      function isSensorOwner() {
-          return false; // TODO: Replace with actual sensor ownership logic (e.g., checking a members map or ownerId field).
-      }
-      function isExistingSensorOwner() {
-          return isSignedIn() && isSensorOwner() && resource != null;
-      }
+
       allow get, list: if true;
-      allow create: if isSignedIn() && isSensorOwner(); // TODO: Implement proper owner check on create.
-      allow update: if isExistingSensorOwner();
-      allow delete: if isExistingSensorOwner();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && resource != null;
+      allow delete: if isSignedIn() && resource != null;
     }
 
     /**
      * @description Controls access to air purifier device data.
      * @path /air_purifier_devices/{deviceId}
-     * @allow (get, list) - Anyone can read device data.
-     * @allow (create, update, delete) - Only the owner can modify device data.
-     * @deny (create, update, delete) - If not authenticated or not the owner.
+     * @allow (get) Any authenticated user can read air purifier device data.
+     * @deny (create) Non-authenticated user cannot create an air purifier device.
+     * @allow (create) Authenticated user can create an air purifier device.
+     * @deny (update) Non-authenticated user cannot update an air purifier device.
+     * @allow (update) Authenticated user can update an air purifier device.
+     * @deny (delete) Non-authenticated user cannot delete an air purifier device.
+     * @allow (delete) Authenticated user can delete an air purifier device.
+     * @principle Authenticated users can read and write device data for prototyping. Consider adding
+     *            a 'members' map for shared access in the future.
      */
     match /air_purifier_devices/{deviceId} {
+      // Helper function to check if the request is authenticated
       function isSignedIn() {
         return request.auth != null;
-      }
-      // NOTE: This is a placeholder.  In a real application, we would check for device ownership.
-      function isDeviceOwner() {
-          return false; // TODO: Replace with actual device ownership logic (e.g., checking a members map or ownerId field).
-      }
-      function isExistingDeviceOwner() {
-        return isSignedIn() && isDeviceOwner() && resource != null;
       }
 
       allow get, list: if true;
-      allow create: if isSignedIn() && isDeviceOwner(); // TODO: Implement proper owner check on create.
-      allow update: if isExistingDeviceOwner();
-      allow delete: if isExistingDeviceOwner();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && resource != null;
+      allow delete: if isSignedIn() && resource != null;
     }
 
     /**
-     * @description Controls access to user-specific air purifier settings.
+     * @description Controls access to air purifier settings for a specific user.
      * @path /users/{userId}/air_purifier_settings/{settingId}
-     * @allow (create, get, list, update, delete) - Only the authenticated user can access their own settings.
-     * @deny (create, get, list, update, delete) - If not authenticated or trying to access another user's settings.
-     * @principle Enforces user ownership of settings data.
+     * @allow (create) User with ID 'user123' can create settings under their profile.
+     * @deny (create) User with ID 'user456' cannot create settings under 'user123' profile.
+     * @allow (get) User with ID 'user123' can read settings under their profile.
+     * @deny (get) User with ID 'user456' cannot read settings under 'user123' profile.
+     * @allow (update) User with ID 'user123' can update settings under their profile.
+     * @deny (update) User with ID 'user456' cannot update settings under 'user123' profile.
+     * @allow (delete) User with ID 'user123' can delete settings under their profile.
+     * @deny (delete) User with ID 'user456' cannot delete settings under 'user123' profile.
+     * @principle Restricts access to a user's own data tree using path-based ownership.
      */
     match /users/{userId}/air_purifier_settings/{settingId} {
-      // Helper function to check if the user is signed in and owns the document.
-      function isSignedIn() {
-        return request.auth != null;
-      }
+      // Helper function to check if the request is from the owner
       function isOwner(userId) {
-        return request.auth.uid == userId;
+        return request.auth != null && request.auth.uid == userId;
       }
       function isExistingOwner(userId) {
-        return isSignedIn() && isOwner(userId) && resource != null;
+        return isOwner(userId) && resource != null;
       }
+
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isExistingOwner(userId);
+
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == userId; // enforce immutable userId
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Controls access to air quality predictions for a sensor.
+     * @description Controls access to air quality predictions for a specific sensor.
      * @path /sensors/{sensorId}/predictions/{predictionId}
-     * @allow (get, list) - Anyone can read air quality predictions.
-     * @allow (create, update, delete) - Only the owner of the sensor can modify predictions.
-     * @deny (create, update, delete) - If not authenticated or not the owner of the sensor.
-     * @principle Public read, owner-only write for air quality predictions, inheriting sensor's ownership.
+     * @allow (get) Any authenticated user can read an air quality prediction.
+     * @deny (create) Non-authenticated user cannot create an air quality prediction.
+     * @allow (create) Authenticated user can create an air quality prediction.
+     * @deny (update) Non-authenticated user cannot update an air quality prediction.
+     * @allow (update) Authenticated user can update an air quality prediction.
+     * @deny (delete) Non-authenticated user cannot delete an air quality prediction.
+     * @allow (delete) Authenticated user can delete an air quality prediction.
+     * @principle Currently allows public read access, but consider denormalizing sensor-level
+     *            authorization (e.g., sensor owner) into each prediction for authorization independence.
      */
     match /sensors/{sensorId}/predictions/{predictionId} {
+      // Helper function to check if the request is authenticated
       function isSignedIn() {
         return request.auth != null;
       }
-      // NOTE: This is a placeholder.  In a real application, we would check for sensor ownership.
-      function isSensorOwner() {
-        return false; // TODO: Replace with actual sensor ownership logic (e.g., checking a members map or ownerId field).
-      }
-      function isExistingSensorOwner() {
-        return isSignedIn() && isSensorOwner() && resource != null;
-      }
+
       allow get, list: if true;
-      allow create: if isSignedIn() && isSensorOwner(); // TODO: Implement proper owner check on create.
-      allow update: if isExistingSensorOwner();
-      allow delete: if isExistingSensorOwner();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && resource != null;
+      allow delete: if isSignedIn() && resource != null;
     }
   }
 }
