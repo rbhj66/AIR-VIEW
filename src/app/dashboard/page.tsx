@@ -1,9 +1,10 @@
 
+
 import DeviceControlCard from '@/components/dashboard/device-control-card';
 import HistoricalDataChart from '@/components/dashboard/historical-data-chart';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FlaskConical, Beaker, Wind, Biohazard, Molecule } from 'lucide-react';
+import { FlaskConical, Wind, Biohazard } from 'lucide-react';
 import AqiCircle from '@/components/dashboard/aqi-circle';
 
 
@@ -25,6 +26,10 @@ const airQualityData = {
   voc: {
     value: 75,
     unit: 'ppb',
+  },
+  virus: {
+    value: 15,
+    unit: 'p/m³',
   },
 };
 
@@ -96,14 +101,14 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex items-start gap-3 rounded-lg bg-muted/50 p-4">
                   <div className="rounded-full bg-primary/10 p-2 text-primary">
-                    <Molecule className="h-6 w-6" />
+                    <FlaskConical className="h-6 w-6" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">CO₂</p>
+                    <p className="text-sm text-muted-foreground">VOCs</p>
                     <p className="text-lg font-semibold">
-                      {airQualityData.co2.value}{' '}
+                      {airQualityData.voc.value}{' '}
                       <span className="text-sm font-normal text-muted-foreground">
-                        {airQualityData.co2.unit}
+                        {airQualityData.voc.unit}
                       </span>
                     </p>
                   </div>
@@ -113,11 +118,44 @@ export default function DashboardPage() {
                     <Biohazard className="h-6 w-6" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">VOCs</p>
+                    <p className="text-sm text-muted-foreground">Viruses</p>
                     <p className="text-lg font-semibold">
-                      {airQualityData.voc.value}{' '}
+                      {airQualityData.virus.value}{' '}
                       <span className="text-sm font-normal text-muted-foreground">
-                        {airQualityData.voc.unit}
+                        {airQualityData.virus.unit}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 rounded-lg bg-muted/50 p-4">
+                  <div className="rounded-full bg-primary/10 p-2 text-primary">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-6 w-6"
+                    >
+                      <path d="M6 15h4" />
+                      <path d="M9 12v6" />
+                      <path d="M15 12h4" />
+                      <path d="M15 9v6" />
+                      <path d="M12 9h.01" />
+                      <path d="M4.5 10.5c-2.4 1.5-4 4-4.5 7.5h21c-.5-3.5-2.1-6-4.5-7.5" />
+                      <path d="M15 6.5A2.5 2.5 0 0 0 12.5 4h-1A2.5 2.5 0 0 0 9 6.5" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">CO2</p>
+                    <p className="text-lg font-semibold">
+                      {airQualityData.co2.value}{' '}
+                      <span className="text-sm font-normal text-muted-foreground">
+                        {airQualityData.co2.unit}
                       </span>
                     </p>
                   </div>
