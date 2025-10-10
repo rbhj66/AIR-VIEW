@@ -4,3 +4,4 @@ config();
 import '@/ai/flows/predict-air-quality.ts';
 import '@/ai/flows/air-purifier-recommendations.ts';
 import '@/ai/flows/wokwi-bridge.ts';
+import '@/ai/flows/chat.ts';

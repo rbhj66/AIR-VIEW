@@ -23,6 +23,7 @@ import DashboardHeader from '@/components/dashboard/header';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import AuthGuard from '@/components/auth-guard';
+import ChatWidget from '@/components/dashboard/chat/chat-widget';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
@@ -92,6 +93,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <SidebarInset>
           <DashboardHeader />
           <div className="flex-1 overflow-y-auto">{children}</div>
+          <ChatWidget />
         </SidebarInset>
       </SidebarProvider>
     </AuthGuard>
