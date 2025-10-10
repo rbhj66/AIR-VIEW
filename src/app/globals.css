@@ -81,7 +81,7 @@
   }
   body {
     @apply text-foreground;
-    background-image: linear-gradient(to right, #86efac, #16a34a);
+    background-image: linear-gradient(to right, #4c1d95, #2e1065);
   }
 }
 
