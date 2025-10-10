@@ -65,19 +65,19 @@ export default function ConnectivityPage() {
                     <div className="font-semibold">
                       1. Configure Firebase Credentials
                     </div>
-                    <p>
+                    <span>
                       In the Wokwi simulation on the left, open the{' '}
                       <Badge variant="outline">secrets.h</Badge> file. You will
                       need to fill in your Firebase project details here.
-                    </p>
+                    </span>
                   </div>
                   <div className="space-y-1">
                     <div className="font-semibold">2. Set the Sensor ID</div>
-                    <p>
+                    <span>
                       In the same <Badge variant="outline">secrets.h</Badge>{' '}
                       file, set the `SENSOR_ID` to a unique name for your
                       simulated device, like &quot;living_room_sensor&quot;.
-                    </p>
+                    </span>
                   </div>
                   <div className="space-y-1">
                     <div className="font-semibold">3. Run the Simulation</div>
