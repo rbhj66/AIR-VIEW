@@ -8,12 +8,13 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
+import HardwareDiagram from '@/components/dashboard/hardware-diagram';
 
 export default function ConnectivityPage() {
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-6 md:gap-8">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="lg:col-span-4">
+        <div className="lg:col-span-4 space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Wokwi IoT Sensor Simulation</CardTitle>
@@ -31,6 +32,17 @@ export default function ConnectivityPage() {
                   sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
                 ></iframe>
               </div>
+            </CardContent>
+          </Card>
+           <Card>
+            <CardHeader>
+              <CardTitle>Hardware Connectivity Diagram</CardTitle>
+              <CardDescription>
+                A visual representation of how the hardware components are connected.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <HardwareDiagram />
             </CardContent>
           </Card>
         </div>
