@@ -8,20 +8,24 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
+import { FileCode, Rocket, Rss, View } from 'lucide-react';
 import HardwareDiagram from '@/components/dashboard/hardware-diagram';
 
 export default function ConnectivityPage() {
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-6 md:gap-8">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="lg:col-span-4 space-y-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-5 lg:gap-8">
+        <div className="lg:col-span-3">
           <Card>
             <CardHeader>
-              <CardTitle>Wokwi IoT Sensor Simulation</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Rss className="text-primary" />
+                Live Sensor Simulation
+              </CardTitle>
               <CardDescription>
-                This is a live simulation of an ESP32 microcontroller with BME680
-                and CCS811 sensors to measure air quality.
+                This is a live Wokwi simulation of an ESP32 microcontroller with
+                air quality sensors. Follow the steps on the right to connect it
+                to your project.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -35,72 +39,69 @@ export default function ConnectivityPage() {
               </div>
             </CardContent>
           </Card>
-           <Card>
-            <CardHeader>
-              <CardTitle>Hardware Connectivity Diagram</CardTitle>
-              <CardDescription>
-                A visual representation of how the hardware components are connected.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <HardwareDiagram />
-            </CardContent>
-          </Card>
         </div>
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>Connecting to Your Project</CardTitle>
+              <CardTitle>Connect Your Sensor</CardTitle>
               <CardDescription>
-                Follow these steps to connect the simulation to your Firebase
-                project and see live data in your dashboard.
+                Follow these steps to link the simulation to your Firebase
+                project and see live data on your dashboard.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Alert>
-                <Terminal className="h-4 w-4" />
-                <AlertTitle>Instructions</AlertTitle>
-                <AlertDescription className="space-y-3">
-                  <div className="space-y-1">
-                    <div className="font-semibold">
-                      1. Configure Firebase Credentials
+                <div className="flex items-start gap-4 rounded-lg border p-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <FileCode className="h-5 w-5" />
                     </div>
-                    <span>
-                      In the Wokwi simulation on the left, open the{' '}
-                      <Badge variant="outline">secrets.h</Badge> file. You will
-                      need to fill in your Firebase project details here.
-                    </span>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="font-semibold">2. Set the Sensor ID</div>
-                    <span>
-                      In the same <Badge variant="outline">secrets.h</Badge>{' '}
-                      file, set the `SENSOR_ID` to a unique name for your
-                      simulated device, like &quot;living_room_sensor&quot;.
-                    </span>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="font-semibold">3. Run the Simulation</div>
-                    <p>
-                      Click the green &quot;play&quot; button in the Wokwi
-                      simulation. You should see sensor readings appear in the
-                      serial monitor. After a moment, the device will connect to
-                      Firebase and start sending data.
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="font-semibold">4. View Live Data</div>
-                    <p>
-                      Navigate back to your main dashboard. The cards will
-                      update in real-time with the data from your simulation.
-                    </p>
-                  </div>
-                </AlertDescription>
-              </Alert>
+                    <div className="space-y-1">
+                        <p className="font-semibold">Step 1: Configure Credentials</p>
+                        <p className="text-sm text-muted-foreground">
+                        In the simulation on the left, open the{' '}
+                        <Badge variant="outline">secrets.h</Badge> tab and enter your
+                        Firebase project details.
+                        </p>
+                    </div>
+                </div>
+                 <div className="flex items-start gap-4 rounded-lg border p-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Rocket className="h-5 w-5" />
+                    </div>
+                    <div className="space-y-1">
+                        <p className="font-semibold">Step 2: Run the Simulation</p>
+                        <p className="text-sm text-muted-foreground">
+                        Click the green "play" button in the Wokwi
+                        simulation. Sensor readings will appear in the serial monitor as it connects.
+                        </p>
+                    </div>
+                </div>
+                 <div className="flex items-start gap-4 rounded-lg border p-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <View className="h-5 w-5" />
+                    </div>
+                    <div className="space-y-1">
+                        <p className="font-semibold">Step 3: View Live Data</p>
+                        <p className="text-sm text-muted-foreground">
+                        Navigate back to your main dashboard. The charts and gauges will
+                        update in real-time with data from your sensor.
+                        </p>
+                    </div>
+                </div>
             </CardContent>
           </Card>
         </div>
       </div>
+       <Card>
+        <CardHeader>
+          <CardTitle>Hardware Connectivity Diagram</CardTitle>
+          <CardDescription>
+            A visual representation of how the hardware components are connected.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <HardwareDiagram />
+        </CardContent>
+      </Card>
     </main>
   );
 }
