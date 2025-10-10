@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -61,9 +62,9 @@ export default function ConnectivityPage() {
                 <AlertTitle>Instructions</AlertTitle>
                 <AlertDescription className="space-y-3">
                   <div className="space-y-1">
-                    <p className="font-semibold">
+                    <div className="font-semibold">
                       1. Configure Firebase Credentials
-                    </p>
+                    </div>
                     <p>
                       In the Wokwi simulation on the left, open the{' '}
                       <Badge variant="outline">secrets.h</Badge> file. You will
@@ -71,7 +72,7 @@ export default function ConnectivityPage() {
                     </p>
                   </div>
                   <div className="space-y-1">
-                    <p className="font-semibold">2. Set the Sensor ID</p>
+                    <div className="font-semibold">2. Set the Sensor ID</div>
                     <p>
                       In the same <Badge variant="outline">secrets.h</Badge>{' '}
                       file, set the `SENSOR_ID` to a unique name for your
@@ -79,7 +80,7 @@ export default function ConnectivityPage() {
                     </p>
                   </div>
                   <div className="space-y-1">
-                    <p className="font-semibold">3. Run the Simulation</p>
+                    <div className="font-semibold">3. Run the Simulation</div>
                     <p>
                       Click the green &quot;play&quot; button in the Wokwi
                       simulation. You should see sensor readings appear in the
@@ -88,7 +89,7 @@ export default function ConnectivityPage() {
                     </p>
                   </div>
                   <div className="space-y-1">
-                    <p className="font-semibold">4. View Live Data</p>
+                    <div className="font-semibold">4. View Live Data</div>
                     <p>
                       Navigate back to your main dashboard. The cards will
                       update in real-time with the data from your simulation.
