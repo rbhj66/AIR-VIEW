@@ -6,7 +6,7 @@ import {
   ChartTooltipContent,
   ChartConfig,
 } from '@/components/ui/chart';
-import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
+import { Area, AreaChart } from 'recharts';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import type { ChartDataPoint } from '@/lib/types';
@@ -38,10 +38,10 @@ export default function AirQualityCard({
 }: AirQualityCardProps) {
   const statusColor =
     status === 'Good' || status === 'Excellent'
-      ? 'bg-accent/50 text-accent-foreground'
+      ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300'
       : status === 'Moderate'
-        ? 'bg-yellow-400/50 text-yellow-700'
-        : 'bg-red-400/50 text-red-700';
+        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300'
+        : 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300';
 
   return (
     <Card className="flex flex-col">
@@ -90,10 +90,16 @@ export default function AirQualityCard({
                 fill="url(#fillValue)"
                 stroke="var(--color-value)"
                 stackId="a"
+                dot={false}
               />
               <ChartTooltip
                 cursor={false}
-                content={<ChartTooltipContent hideLabel hideIndicator />}
+                content={<ChartTooltipContent hideLabel hideIndicator formatter={(value, name, props) => (
+                  <div className="flex flex-col items-start">
+                    <div className="font-bold">{`${props.payload.value} ${unit}`}</div>
+                    <div className="text-xs text-muted-foreground">{props.payload.time}</div>
+                  </div>
+                )} />}
               />
             </AreaChart>
           </ChartContainer>
