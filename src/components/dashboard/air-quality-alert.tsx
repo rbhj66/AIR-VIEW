@@ -47,7 +47,6 @@ export default function AirQualityAlert({ aqi, isLoading }: AirQualityAlertProps
 
   return (
     // The audio element is hidden but available to be played.
-    // I'm using a placeholder sound from a reliable source.
     // In a real app, you'd host your own audio file.
     <audio ref={audioRef} src="https://www.soundjay.com/buttons/sounds/beep-07a.mp3" preload="auto" />
   );
