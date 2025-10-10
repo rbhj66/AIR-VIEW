@@ -34,19 +34,22 @@ import { collection, limit, query, orderBy, where, Timestamp } from 'firebase/fi
 import { useState, useMemo } from 'react';
 import { Skeleton } from '../ui/skeleton';
 
+// Simplified AQI calculation (not official)
+const calculateAqi = (pm25: number) => {
+  if (pm25 <= 12) return Math.round((50 / 12) * pm25);
+  if (pm25 <= 35.4) return Math.round((49 / 23.4) * (pm25 - 12) + 51);
+  if (pm25 <= 55.4) return Math.round((49 / 20) * (pm25 - 35.5) + 101);
+  if (pm25 <= 150.4) return Math.round((49 / 95) * (pm25 - 55.5) + 151);
+  if (pm25 <= 200.4) return 201; // For values > 150.4, cap at a high value for visualization
+  return 201; 
+};
+
+
 const chartConfig = {
-  pm25: {
-    label: 'PM2.5',
+  aqi: {
+    label: 'AQI',
     color: 'hsl(var(--primary))',
-  },
-  pm10: {
-    label: 'PM10',
-    color: 'hsl(var(--accent))',
-  },
-  co2: {
-    label: 'CO₂',
-    color: 'hsl(var(--secondary-foreground))',
-  },
+  }
 } satisfies ChartConfig;
 
 export default function HistoricalDataChart({ className, sensorId }: { className?: string, sensorId: string }) {
@@ -69,6 +72,7 @@ export default function HistoricalDataChart({ className, sensorId }: { className
     if (!chartData) return [];
     return chartData.map((d: any) => ({
       ...d,
+      aqi: calculateAqi(d.pm25),
       date: new Date(d.timestamp.seconds * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     }));
   }, [chartData]);
@@ -78,9 +82,9 @@ export default function HistoricalDataChart({ className, sensorId }: { className
     <Card className={className}>
       <CardHeader className="flex-row items-center justify-between">
         <div>
-          <CardTitle>Historical Air Quality</CardTitle>
+          <CardTitle>Historical Air Quality Index (AQI)</CardTitle>
           <CardDescription>
-            Air quality trends from your sensor.
+            AQI trends from your sensor over the selected period.
           </CardDescription>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>
@@ -119,62 +123,30 @@ export default function HistoricalDataChart({ className, sensorId }: { className
               axisLine={false}
               tickMargin={8}
               tickFormatter={(value) => `${value}`}
-              yAxisId="left"
-            />
-             <YAxis
-              orientation="right"
-              yAxisId="right"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => `${value}`}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <defs>
-              <linearGradient id="fillPm25" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillAqi" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-pm25)"
+                  stopColor="var(--color-aqi)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-pm25)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-              <linearGradient id="fillPm10" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-pm10)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-pm10)"
+                  stopColor="var(--color-aqi)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
             </defs>
             <Area
-              dataKey="pm10"
+              dataKey="aqi"
               type="natural"
-              fill="url(#fillPm10)"
+              fill="url(#fillAqi)"
               fillOpacity={0.4}
-              stroke="var(--color-pm10)"
+              stroke="var(--color-aqi)"
               stackId="a"
-              yAxisId="left"
             />
-            <Area
-              dataKey="pm25"
-              type="natural"
-              fill="url(#fillPm25)"
-              fillOpacity={0.4}
-              stroke="var(--color-pm25)"
-              stackId="a"
-              yAxisId="left"
-            />
-             <Bar dataKey="co2" fill="var(--color-co2)" radius={4} yAxisId="right" barSize={10} opacity={0.3} />
           </AreaChart>
         </ChartContainer>}
       </CardContent>
