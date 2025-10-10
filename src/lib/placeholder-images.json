@@ -5,6 +5,12 @@
       "description": "User's avatar",
       "imageUrl": "https://picsum.photos/seed/user-avatar/40/40",
       "imageHint": "person face"
+    },
+    {
+      "id": "hero-image",
+      "description": "A modern living room with an air purifier",
+      "imageUrl": "https://picsum.photos/seed/hero-image/600/400",
+      "imageHint": "living room"
     }
   ]
 }
