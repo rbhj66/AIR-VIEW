@@ -166,7 +166,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "AirPurifierDevice",
       "type": "object",
-      "description": "Represents a connected air purifier device.",
+      "description": "Represents a connected air purifier device, including its state.",
       "properties": {
         "id": {
           "type": "string",
@@ -176,25 +176,30 @@
           "type": "string",
           "description": "Name of the air purifier device."
         },
-        "model": {
-          "type": "string",
-          "description": "Model of the air purifier device."
-        },
-        "serialNumber": {
-          "type": "string",
-          "description": "Serial number of the air purifier device."
-        },
         "location": {
           "type": "string",
           "description": "Location of the air purifier device (e.g., 'Bedroom', 'Living Room')."
+        },
+        "isPoweredOn": {
+          "type": "boolean",
+          "description": "Indicates if the device is currently powered on."
+        },
+        "fanSpeed": {
+          "type": "number",
+          "description": "Current fan speed percentage (0-100)."
+        },
+        "mode": {
+          "type": "string",
+          "description": "The operating mode of the air purifier (e.g., 'auto', 'sleep', 'turbo')."
         }
       },
       "required": [
         "id",
         "name",
-        "model",
-        "serialNumber",
-        "location"
+        "location",
+        "isPoweredOn",
+        "fanSpeed",
+        "mode"
       ]
     },
     "AirQualityPrediction": {
@@ -312,7 +317,7 @@
           "schema": {
             "$ref": "#/backend/entities/AirPurifierDevice"
           },
-          "description": "Stores air purifier device information. Consider adding a 'members' map if devices can be shared (denormalized for authorization independence).",
+          "description": "Stores air purifier device information and state. This collection can be written to by users to control their devices.",
           "params": [
             {
               "name": "deviceId",
@@ -365,4 +370,3 @@
     "reasoning": "The Firestore structure is designed to ensure security, scalability, and debuggability, adhering to the core design principles and strategy mandates. Authorization Independence is achieved through path-based ownership for user-specific data and the avoidance of `get()` calls in security rules. Data is segregated into collections with homogeneous security postures. Access modeling uses path-based ownership where applicable.\n\nSpecifically:\n\n*   **Users:** User data is stored in `/users/{userId}`. This provides a natural path-based ownership model.\n*   **Sensors:** Sensor data is stored in `/sensors/{sensorId}`.  Access to sensors might need to be controlled, potentially through a membership map on each sensor if collaborative access is required.\n*   **AirQualityReadings:** Air quality readings are stored as a subcollection of sensors at `/sensors/{sensorId}/readings/{readingId}`.\n*   **AirPurifierDevices:** Air purifier device data is stored in `/air_purifier_devices/{deviceId}`.  If device access needs to be shared, a membership map should be included in the device documents.\n*   **AirPurifierSettings:** User-specific air purifier settings are stored under the user's document: `/users/{userId}/air_purifier_settings/{settingId}`.\n*   **AirQualityPredictions:** Air quality predictions are stored as a subcollection of sensors at `/sensors/{sensorId}/predictions/{predictionId}`.\n\nThis structure allows for secure `list` operations because each collection has a well-defined access control model, fulfilling the QAPs requirement.  The structure supports the integrity of ownership, timestamps, and potentially denormalized data (like sensor membership) where needed. For example, you can easily secure a rule like `match /users/{userId}/air_purifier_settings/{settingId} { allow read, write: if request.auth.uid == userId; }`"
   }
 }
-    

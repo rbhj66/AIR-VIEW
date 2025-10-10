@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -17,16 +17,68 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { AirVent, Fan, Power, Shield, Zap } from 'lucide-react';
+import { AirVent, Fan } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { createPurifierDevice } from '@/lib/create-purifier-device';
 
 export default function DeviceControlCard({ className }: { className?: string }) {
-  const [isPoweredOn, setIsPoweredOn] = useState(true);
-  const [mode, setMode] = useState('auto');
-  const [fanSpeed, setFanSpeed] = useState([50]);
+  const firestore = useFirestore();
+  const { user } = useAuth();
+  const deviceId = 'living_room_purifier';
+
+  const deviceRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'air_purifier_devices', deviceId);
+  }, [firestore, user, deviceId]);
+
+  const { data: deviceState, isLoading } = useDoc(deviceRef);
+
+  useEffect(() => {
+    if (!isLoading && !deviceState && firestore) {
+      createPurifierDevice(firestore, deviceId, {
+        name: 'Living Room Purifier',
+        location: 'Living Room',
+        isPoweredOn: true,
+        mode: 'auto',
+        fanSpeed: 50,
+      });
+    }
+  }, [isLoading, deviceState, firestore, deviceId]);
+
+  const handlePowerChange = (poweredOn: boolean) => {
+    if (deviceRef) {
+      setDocumentNonBlocking(deviceRef, { isPoweredOn: poweredOn }, { merge: true });
+    }
+  };
+
+  const handleModeChange = (newMode: string) => {
+    if (deviceRef) {
+      setDocumentNonBlocking(deviceRef, { mode: newMode }, { merge: true });
+    }
+  };
+
+  const handleFanSpeedChange = (newFanSpeed: number[]) => {
+    if (deviceRef) {
+      setDocumentNonBlocking(deviceRef, { fanSpeed: newFanSpeed[0] }, { merge: true });
+    }
+  };
+
+  const isPoweredOn = deviceState?.isPoweredOn ?? true;
+  const mode = deviceState?.mode ?? 'auto';
+  const fanSpeed = [deviceState?.fanSpeed ?? 50];
 
   return (
-    <Card className={cn('transition-all', !isPoweredOn && 'bg-muted/50', className)}>
+    <Card
+      className={cn(
+        'transition-all',
+        !isPoweredOn && 'bg-muted/50',
+        className
+      )}
+    >
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
@@ -39,8 +91,9 @@ export default function DeviceControlCard({ className }: { className?: string })
           </div>
           <Switch
             checked={isPoweredOn}
-            onCheckedChange={setIsPoweredOn}
+            onCheckedChange={handlePowerChange}
             aria-label="Power"
+            disabled={isLoading}
           />
         </div>
       </CardHeader>
@@ -52,9 +105,13 @@ export default function DeviceControlCard({ className }: { className?: string })
       >
         <div className="space-y-2">
           <Label htmlFor="mode" className="flex items-center gap-2">
-            <Shield /> Mode
+            <AirVent /> Mode
           </Label>
-          <Select value={mode} onValueChange={setMode} disabled={!isPoweredOn}>
+          <Select
+            value={mode}
+            onValueChange={handleModeChange}
+            disabled={!isPoweredOn || isLoading}
+          >
             <SelectTrigger id="mode" className="w-full">
               <SelectValue placeholder="Select mode" />
             </SelectTrigger>
@@ -73,10 +130,10 @@ export default function DeviceControlCard({ className }: { className?: string })
           <Slider
             id="fan-speed"
             value={fanSpeed}
-            onValueChange={setFanSpeed}
+            onValueChange={handleFanSpeedChange}
             max={100}
             step={10}
-            disabled={!isPoweredOn}
+            disabled={!isPoweredOn || isLoading}
           />
         </div>
       </CardContent>
