@@ -1,4 +1,4 @@
-'use server';
+'use client';
 import { doc, setDoc, Firestore } from 'firebase/firestore';
 
 interface DeviceData {
@@ -9,11 +9,11 @@ interface DeviceData {
   fanSpeed: number;
 }
 
-export async function createPurifierDevice(
+export function createPurifierDevice(
   firestore: Firestore,
   deviceId: string,
   data: DeviceData
 ) {
   const deviceRef = doc(firestore, 'air_purifier_devices', deviceId);
-  await setDoc(deviceRef, data);
+  setDoc(deviceRef, data);
 }
