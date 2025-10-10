@@ -12,9 +12,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, Sparkles, Loader2, AlertCircle } from 'lucide-react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect } from 'react';
+import { useFormStatus } from 'react-dom';
 import { getPredictionAction } from '@/lib/actions';
-import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
@@ -38,7 +38,7 @@ function SubmitButton() {
 }
 
 export default function PredictionCard() {
-  const [state, formAction] = useFormState(getPredictionAction, initialState);
+  const [state, formAction] = useActionState(getPredictionAction, initialState);
   const { toast } = useToast();
 
   useEffect(() => {

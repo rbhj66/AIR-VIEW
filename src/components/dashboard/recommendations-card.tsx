@@ -12,9 +12,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Lightbulb, Sparkles, Loader2 } from 'lucide-react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect } from 'react';
+import { useFormStatus } from 'react-dom';
 import { getRecommendationsAction } from '@/lib/actions';
-import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
@@ -49,7 +49,7 @@ interface RecommendationsCardProps {
 export default function RecommendationsCard({
   initialAirQuality,
 }: RecommendationsCardProps) {
-  const [state, formAction] = useFormState(
+  const [state, formAction] = useActionState(
     getRecommendationsAction,
     initialState
   );
