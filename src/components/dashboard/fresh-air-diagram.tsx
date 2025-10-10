@@ -1,10 +1,17 @@
 'use client';
 
-import { ArrowRight, Wind, Home, AirVent, Building2, Car } from 'lucide-react';
+import { Wind, Home, AirVent, Building2, Car, ArrowRight } from 'lucide-react';
+
+const AnimatedArrow = ({ delay }: { delay: string }) => (
+  <ArrowRight
+    className="h-6 w-6 animate-flow-x text-muted-foreground"
+    style={{ animationDelay: delay }}
+  />
+);
 
 export default function FreshAirDiagram() {
   return (
-    <div className="flex w-full items-center justify-center rounded-lg bg-muted/30 p-8">
+    <div className="flex w-full items-center justify-center rounded-lg bg-muted/30 p-8 overflow-hidden">
       <div className="relative flex w-full max-w-4xl items-center justify-center gap-12">
         {/* Left Side: Source */}
         <div className="flex flex-col items-center gap-2 text-center">
@@ -15,10 +22,13 @@ export default function FreshAirDiagram() {
           <p className="text-xs text-muted-foreground">Source</p>
         </div>
 
-        {/* Arrow to Purifier */}
-        <div className="absolute left-1/4 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
-          <ArrowRight className="h-6 w-6 text-muted-foreground" />
+        {/* Animated Arrows to Purifier */}
+        <div className="absolute left-1/4 top-1/2 flex -translate-x-1/2 -translate-y-1/2 transform gap-4">
+          <AnimatedArrow delay="0s" />
+          <AnimatedArrow delay="0.5s" />
+          <AnimatedArrow delay="1s" />
         </div>
+
 
         {/* Middle: Purifier */}
         <div className="z-10 flex flex-col items-center gap-2 text-center">
@@ -29,9 +39,11 @@ export default function FreshAirDiagram() {
           <p className="text-xs text-muted-foreground">AirView Device</p>
         </div>
         
-        {/* Arrow to Destinations */}
-        <div className="absolute right-1/4 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
-          <ArrowRight className="h-6 w-6 text-muted-foreground" />
+        {/* Animated Arrows to Destinations */}
+        <div className="absolute right-1/4 top-1/2 flex -translate-x-1/2 -translate-y-1/2 transform gap-4">
+           <AnimatedArrow delay="0s" />
+           <AnimatedArrow delay="0.5s" />
+           <AnimatedArrow delay="1s" />
         </div>
 
         {/* Right Side: Destinations */}

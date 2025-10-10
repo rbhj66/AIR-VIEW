@@ -88,10 +88,24 @@ export default {
             height: '0',
           },
         },
+        'flow-x': {
+          '0%': {
+            opacity: '0',
+            transform: 'translateX(-20px)',
+          },
+          '50%': {
+            opacity: '1',
+          },
+          '100%': {
+            opacity: '0',
+            transform: 'translateX(20px)',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'flow-x': 'flow-x 1.5s linear infinite',
       },
     },
   },
