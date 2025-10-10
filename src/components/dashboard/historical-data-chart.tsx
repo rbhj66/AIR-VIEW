@@ -2,8 +2,6 @@
 import {
   AreaChart,
   Area,
-  Bar,
-  BarChart,
   CartesianGrid,
   XAxis,
   YAxis,
