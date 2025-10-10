@@ -15,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import AirQualityAlert from '@/components/dashboard/air-quality-alert';
 import AirQualityCard from '@/components/dashboard/air-quality-card';
 import { ChartDataPoint } from '@/lib/types';
+import HarmfulGases from '@/components/dashboard/harmful-gases';
 
 // Simplified AQI calculation (not official)
 const calculateAqi = (pm25: number) => {
@@ -168,7 +169,7 @@ export default function DashboardPage() {
           </Card>
           <DeviceControlCard className="h-full" />
       </div>
-
+        
        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           {isLoading ? (
             <>
@@ -214,7 +215,14 @@ export default function DashboardPage() {
             </>
           )}
         </div>
-
+        
+      <div className="grid grid-cols-1 gap-4 lg:gap-8">
+        <HarmfulGases
+          isLoading={isLoading}
+          co2={airQualityData.co2.value}
+          vocs={airQualityData.voc.value}
+        />
+      </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
         <PredictionCard />
