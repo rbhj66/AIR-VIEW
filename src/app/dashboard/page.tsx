@@ -9,7 +9,7 @@ import AqiCircle from '@/components/dashboard/aqi-circle';
 import PredictionCard from '@/components/dashboard/prediction-card';
 import RecommendationsCard from '@/components/dashboard/recommendations-card';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, limit, query, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, limit, query, orderBy, Timestamp, where } from 'firebase/firestore';
 import { useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import AirQualityAlert from '@/components/dashboard/air-quality-alert';
