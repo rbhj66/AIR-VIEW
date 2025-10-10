@@ -1,4 +1,4 @@
-
+'use client';
 import {
   Card,
   CardContent,
@@ -8,8 +8,41 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { FileCode, Rocket, Rss, View } from 'lucide-react';
+import { FileCode, Rocket, Rss, View, Copy } from 'lucide-react';
 import HardwareDiagram from '@/components/dashboard/hardware-diagram';
+import { firebaseConfig } from '@/firebase/config';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+
+const CredentialDisplay = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) => {
+  const { toast } = useToast();
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(value);
+    toast({
+      title: 'Copied to clipboard!',
+      description: `${label} has been copied.`,
+    });
+  };
+
+  return (
+    <div className="flex items-center justify-between rounded-md bg-muted/50 p-2 text-sm">
+      <div className="flex flex-col">
+        <span className="text-xs text-muted-foreground">{label}</span>
+        <code className="font-mono">{value}</code>
+      </div>
+      <Button variant="ghost" size="icon" onClick={handleCopy}>
+        <Copy className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+};
 
 export default function ConnectivityPage() {
   return (
@@ -50,48 +83,51 @@ export default function ConnectivityPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="flex items-start gap-4 rounded-lg border p-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <FileCode className="h-5 w-5" />
-                    </div>
-                    <div className="space-y-1">
-                        <p className="font-semibold">Step 1: Configure Credentials</p>
-                        <p className="text-sm text-muted-foreground">
-                        In the simulation on the left, open the{' '}
-                        <Badge variant="outline">secrets.h</Badge> tab and enter your
-                        Firebase project details.
-                        </p>
-                    </div>
+              <div className="flex items-start gap-4 rounded-lg border-2 border-primary bg-primary/10 p-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary">
+                  <FileCode className="h-5 w-5" />
                 </div>
-                 <div className="flex items-start gap-4 rounded-lg border p-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <Rocket className="h-5 w-5" />
-                    </div>
-                    <div className="space-y-1">
-                        <p className="font-semibold">Step 2: Run the Simulation</p>
-                        <p className="text-sm text-muted-foreground">
-                        Click the green "play" button in the Wokwi
-                        simulation. Sensor readings will appear in the serial monitor as it connects.
-                        </p>
-                    </div>
+                <div className="w-full space-y-2">
+                  <p className="font-semibold">Step 1: Configure Credentials</p>
+                  <p className="text-sm text-muted-foreground">
+                    Copy your Firebase project details below and paste them into
+                    the <Badge variant="outline">secrets.h</Badge> tab in the Wokwi simulation.
+                  </p>
+                  <div className="space-y-2 rounded-md bg-background/50 p-2">
+                    <CredentialDisplay label="Project ID" value={firebaseConfig.projectId} />
+                    <CredentialDisplay label="API Key" value={firebaseConfig.apiKey} />
+                  </div>
                 </div>
-                 <div className="flex items-start gap-4 rounded-lg border p-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <View className="h-5 w-5" />
-                    </div>
-                    <div className="space-y-1">
-                        <p className="font-semibold">Step 3: View Live Data</p>
-                        <p className="text-sm text-muted-foreground">
-                        Navigate back to your main dashboard. The charts and gauges will
-                        update in real-time with data from your sensor.
-                        </p>
-                    </div>
+              </div>
+              <div className="flex items-start gap-4 rounded-lg border p-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Rocket className="h-5 w-5" />
                 </div>
+                <div className="space-y-1">
+                  <p className="font-semibold">Step 2: Run the Simulation</p>
+                  <p className="text-sm text-muted-foreground">
+                    Click the green "play" button in the Wokwi simulation. Sensor
+                    readings will appear in the serial monitor as it connects.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4 rounded-lg border p-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <View className="h-5 w-5" />
+                </div>
+                <div className="space-y-1">
+                  <p className="font-semibold">Step 3: View Live Data</p>
+                  <p className="text-sm text-muted-foreground">
+                    Navigate back to your main dashboard. The charts and gauges
+                    will update in real-time with data from your sensor.
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
-       <Card>
+      <Card>
         <CardHeader>
           <CardTitle>Hardware Connectivity Diagram</CardTitle>
           <CardDescription>
