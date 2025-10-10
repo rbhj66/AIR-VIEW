@@ -29,18 +29,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useState } from 'react';
-
-const chartData = Array.from({ length: 30 }, (_, i) => {
-  const date = new Date();
-  date.setDate(date.getDate() - (30 - i));
-  return {
-    date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    pm25: Math.floor(Math.random() * 20 + 5),
-    pm10: Math.floor(Math.random() * 30 + 10),
-    co2: Math.floor(Math.random() * 100 + 400),
-  };
-});
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, limit, query, orderBy, where, Timestamp } from 'firebase/firestore';
+import { useState, useMemo } from 'react';
+import { Skeleton } from '../ui/skeleton';
 
 const chartConfig = {
   pm25: {
@@ -57,8 +49,30 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function HistoricalDataChart({ className }: { className?: string }) {
+export default function HistoricalDataChart({ className, sensorId }: { className?: string, sensorId: string }) {
   const [timeRange, setTimeRange] = useState('30d');
+  const firestore = useFirestore();
+
+  const { data: chartData, isLoading } = useCollection(useMemoFirebase(() => {
+    if (!firestore) return null;
+    const days = parseInt(timeRange.replace('d', ''), 10);
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    return query(
+      collection(firestore, 'sensors', sensorId, 'readings'),
+      where('timestamp', '>=', Timestamp.fromDate(startDate)),
+      orderBy('timestamp', 'asc'),
+    );
+  }, [firestore, timeRange, sensorId]));
+  
+  const formattedData = useMemo(() => {
+    if (!chartData) return [];
+    return chartData.map((d: any) => ({
+      ...d,
+      date: new Date(d.timestamp.seconds * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    }));
+  }, [chartData]);
+
 
   return (
     <Card className={className}>
@@ -66,7 +80,7 @@ export default function HistoricalDataChart({ className }: { className?: string 
         <div>
           <CardTitle>Historical Air Quality</CardTitle>
           <CardDescription>
-            Air quality trends over the last 30 days
+            Air quality trends from your sensor.
           </CardDescription>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>
@@ -81,10 +95,12 @@ export default function HistoricalDataChart({ className }: { className?: string 
         </Select>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-64 w-full">
+        {isLoading && <div className="h-64 w-full flex items-center justify-center"><Skeleton className="h-full w-full" /></div>}
+        {!isLoading && formattedData.length === 0 && <div className="h-64 w-full flex items-center justify-center"><p className='text-muted-foreground'>No data from sensor yet. Make sure the Wokwi simulation is running.</p></div>}
+        {!isLoading && formattedData.length > 0 && <ChartContainer config={chartConfig} className="h-64 w-full">
           <AreaChart
             accessibilityLayer
-            data={chartData}
+            data={formattedData}
             margin={{
               left: 12,
               right: 12,
@@ -160,7 +176,7 @@ export default function HistoricalDataChart({ className }: { className?: string 
             />
              <Bar dataKey="co2" fill="var(--color-co2)" radius={4} yAxisId="right" barSize={10} opacity={0.3} />
           </AreaChart>
-        </ChartContainer>
+        </ChartContainer>}
       </CardContent>
     </Card>
   );
