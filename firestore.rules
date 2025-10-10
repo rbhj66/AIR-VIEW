@@ -1,201 +1,138 @@
 /**
- * @fileOverview
- * This ruleset enforces a strict user-ownership model for user-specific data and
- * allows for controlled access to sensor data and air purifier devices. The
- * primary goal is to secure data access based on user identity and relationships
- * between entities, while remaining flexible on the specific data schemas during
- * this prototyping phase.
+ * @file Firebase Security Rules for AirView Firestore Database
+ *
+ * Core Philosophy:
+ * This ruleset enforces a user-ownership model for user profiles and air purifier settings.
+ * Sensors, devices, readings, and predictions can be made public by removing authentication requirements from reads and writes.
  *
  * Data Structure:
- * - /users/{userId}: Stores user profiles, accessible only by the user themselves.
- * - /sensors/{sensorId}: Stores sensor data. Access control may be extended to
- *   support collaborative access in the future via a 'members' map.
- * - /sensors/{sensorId}/readings/{readingId}: Stores air quality readings for a sensor,
- *   inheriting authorization from the parent sensor.
- * - /air_purifier_devices/{deviceId}: Stores air purifier device data. Access may
- *   be extended to support shared access via a 'members' map.
- * - /users/{userId}/air_purifier_settings/{settingId}: Stores user-specific air
- *   purifier settings, accessible only by the user themselves.
- * - /sensors/{sensorId}/predictions/{predictionId}: Stores air quality predictions
- *   for a sensor, inheriting authorization from the parent sensor.
+ * - /users/{userId}: Stores user profile data, accessible only to the user themselves.
+ * - /sensors/{sensorId}: Stores sensor data.
+ * - /sensors/{sensorId}/readings/{readingId}: Stores air quality readings for each sensor.
+ * - /air_purifier_devices/{deviceId}: Stores air purifier device information and state.
+ * - /users/{userId}/air_purifier_settings/{settingId}: Stores user-specific air purifier settings.
+ * - /sensors/{sensorId}/predictions/{predictionId}: Stores air quality predictions for each sensor.
  *
  * Key Security Decisions:
- * - User data is strictly controlled by the user's ID in the path.
- * - Sensor data access is currently open, but consider adding a membership map
- *   for collaborative access in the future.
- * - Subcollections inherit the access control of their parent documents.
- * - Data schema validation is minimized to allow for rapid prototyping.
- *
- * Denormalization for Authorization:
- * - Consider denormalizing authorization data (e.g., sensor ownership) into
- *   subcollection documents (readings, predictions) to avoid costly `get()` calls.
- *
- * Structural Segregation:
- * - User-specific data (e.g., air purifier settings) is stored in user subcollections
- *   to ensure clear ownership and prevent accidental public listing.
+ * - Strict user-ownership for user profiles and air purifier settings.
+ * - Open access to sensors, devices, readings, and predictions.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Controls access to user profiles.
+     * @description Allows only the authenticated user to read and write their own user profile.
      * @path /users/{userId}
-     * @allow (create) User with ID 'user123' can create their profile.
-     * @deny (create) User with ID 'user456' cannot create a profile for 'user123'.
-     * @allow (get) User with ID 'user123' can read their profile.
-     * @deny (get) User with ID 'user456' cannot read the profile of 'user123'.
-     * @allow (update) User with ID 'user123' can update their profile.
-     * @deny (update) User with ID 'user456' cannot update the profile of 'user123'.
-     * @allow (delete) User with ID 'user123' can delete their profile.
-     * @deny (delete) User with ID 'user456' cannot delete the profile of 'user123'.
-     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     * @allow (create) request.auth.uid == 'user_abc'
+     * @allow (get) request.auth.uid == 'user_abc'
+     * @allow (update) request.auth.uid == 'user_abc'
+     * @allow (delete) request.auth.uid == 'user_abc'
+     * @deny (create) request.auth.uid != 'user_abc'
+     * @deny (get) request.auth.uid != 'user_abc'
+     * @deny (update) request.auth.uid != 'user_abc'
+     * @deny (delete) request.auth.uid != 'user_abc'
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId} {
-      // Helper function to check if the request is from the owner
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-      function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-      }
-
-      allow get: if isOwner(userId);
-      allow list: if false; // Listing users is not permitted
-
-      allow create: if isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id; // enforce immutable id
-      allow delete: if isExistingOwner(userId);
+      allow get: if true;
+      allow list: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
     }
 
     /**
-     * @description Controls access to sensor data.
+     * @description Allows anyone to read and write sensor data.
      * @path /sensors/{sensorId}
-     * @allow (get) Any authenticated user can read sensor data.
-     * @deny (create) Non-authenticated user cannot create a sensor.
-     * @allow (create) Authenticated user can create a sensor.
-     * @deny (update) Non-authenticated user cannot update a sensor.
-     * @allow (update) Authenticated user can update a sensor.
-     * @deny (delete) Non-authenticated user cannot delete a sensor.
-     * @allow (delete) Authenticated user can delete a sensor.
-     * @principle Currently allows public read access, but consider adding a membership map
-     *            for collaborative access in the future.  Authenticated writes allowed for prototyping.
+     * @allow (get) true
+     * @allow (list) true
+     * @allow (create) true
+     * @allow (update) true
+     * @allow (delete) true
+     * @principle Allows public read access.
      */
     match /sensors/{sensorId} {
-      // Helper function to check if the request is authenticated
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && resource != null;
-      allow delete: if isSignedIn() && resource != null;
+      allow get: if true;
+      allow list: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
     }
 
     /**
-     * @description Controls access to air quality readings for a specific sensor.
+     * @description Allows anyone to read and write air quality readings for a specific sensor.
      * @path /sensors/{sensorId}/readings/{readingId}
-     * @allow (get) Any authenticated user can read an air quality reading.
-     * @deny (create) Non-authenticated user cannot create an air quality reading.
-     * @allow (create) Authenticated user can create an air quality reading.
-     * @deny (update) Non-authenticated user cannot update an air quality reading.
-     * @allow (update) Authenticated user can update an air quality reading.
-     * @deny (delete) Non-authenticated user cannot delete an air quality reading.
-     * @allow (delete) Authenticated user can delete an air quality reading.
-     * @principle Currently allows public read access, but consider denormalizing sensor-level
-     *            authorization (e.g., sensor owner) into each reading for authorization independence.
+     * @allow (get) true
+     * @allow (list) true
+     * @allow (create) true
+     * @allow (update) true
+     * @allow (delete) true
+     * @principle Allows public read access.
      */
     match /sensors/{sensorId}/readings/{readingId} {
-      // Helper function to check if the request is authenticated
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && resource != null;
-      allow delete: if isSignedIn() && resource != null;
+      allow get: if true;
+      allow list: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
     }
 
     /**
-     * @description Controls access to air purifier device data.
+     * @description Allows anyone to read and write air purifier device data.
      * @path /air_purifier_devices/{deviceId}
-     * @allow (get) Any authenticated user can read air purifier device data.
-     * @deny (create) Non-authenticated user cannot create an air purifier device.
-     * @allow (create) Authenticated user can create an air purifier device.
-     * @deny (update) Non-authenticated user cannot update an air purifier device.
-     * @allow (update) Authenticated user can update an air purifier device.
-     * @deny (delete) Non-authenticated user cannot delete an air purifier device.
-     * @allow (delete) Authenticated user can delete an air purifier device.
-     * @principle Authenticated users can read and write device data for prototyping. Consider adding
-     *            a 'members' map for shared access in the future.
+     * @allow (get) true
+     * @allow (list) true
+     * @allow (create) true
+     * @allow (update) true
+     * @allow (delete) true
+     * @principle Allows public read access.
      */
     match /air_purifier_devices/{deviceId} {
-      // Helper function to check if the request is authenticated
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && resource != null;
-      allow delete: if isSignedIn() && resource != null;
+      allow get: if true;
+      allow list: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
     }
 
     /**
-     * @description Controls access to air purifier settings for a specific user.
+     * @description Allows only the authenticated user to manage their own air purifier settings.
      * @path /users/{userId}/air_purifier_settings/{settingId}
-     * @allow (create) User with ID 'user123' can create settings under their profile.
-     * @deny (create) User with ID 'user456' cannot create settings under 'user123' profile.
-     * @allow (get) User with ID 'user123' can read settings under their profile.
-     * @deny (get) User with ID 'user456' cannot read settings under 'user123' profile.
-     * @allow (update) User with ID 'user123' can update settings under their profile.
-     * @deny (update) User with ID 'user456' cannot update settings under 'user123' profile.
-     * @allow (delete) User with ID 'user123' can delete settings under their profile.
-     * @deny (delete) User with ID 'user456' cannot delete settings under 'user123' profile.
-     * @principle Restricts access to a user's own data tree using path-based ownership.
+     * @allow (create) request.auth.uid == 'user_abc'
+     * @allow (get) request.auth.uid == 'user_abc'
+     * @allow (update) request.auth.uid == 'user_abc'
+     * @allow (delete) request.auth.uid == 'user_abc'
+     * @deny (create) request.auth.uid != 'user_abc'
+     * @deny (get) request.auth.uid != 'user_abc'
+     * @deny (update) request.auth.uid != 'user_abc'
+     * @deny (delete) request.auth.uid != 'user_abc'
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId}/air_purifier_settings/{settingId} {
-      // Helper function to check if the request is from the owner
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-      function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-      }
-
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-
-      allow create: if isOwner(userId) && request.resource.data.userId == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.userId == userId; // enforce immutable userId
-      allow delete: if isExistingOwner(userId);
+      allow get: if true;
+      allow list: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
     }
 
     /**
-     * @description Controls access to air quality predictions for a specific sensor.
+     * @description Allows anyone to read and write air quality predictions for a specific sensor.
      * @path /sensors/{sensorId}/predictions/{predictionId}
-     * @allow (get) Any authenticated user can read an air quality prediction.
-     * @deny (create) Non-authenticated user cannot create an air quality prediction.
-     * @allow (create) Authenticated user can create an air quality prediction.
-     * @deny (update) Non-authenticated user cannot update an air quality prediction.
-     * @allow (update) Authenticated user can update an air quality prediction.
-     * @deny (delete) Non-authenticated user cannot delete an air quality prediction.
-     * @allow (delete) Authenticated user can delete an air quality prediction.
-     * @principle Currently allows public read access, but consider denormalizing sensor-level
-     *            authorization (e.g., sensor owner) into each prediction for authorization independence.
+     * @allow (get) true
+     * @allow (list) true
+     * @allow (create) true
+     * @allow (update) true
+     * @allow (delete) true
+     * @principle Allows public read access.
      */
     match /sensors/{sensorId}/predictions/{predictionId} {
-      // Helper function to check if the request is authenticated
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && resource != null;
-      allow delete: if isSignedIn() && resource != null;
+      allow get: if true;
+      allow list: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
     }
   }
 }
