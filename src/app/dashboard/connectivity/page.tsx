@@ -7,7 +7,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { FileCode, Rocket, Rss, View, Copy } from 'lucide-react';
 import HardwareDiagram from '@/components/dashboard/hardware-diagram';
 import { firebaseConfig } from '@/firebase/config';
@@ -91,11 +90,18 @@ export default function ConnectivityPage() {
                   <p className="font-semibold">Step 1: Configure Credentials</p>
                   <p className="text-sm text-muted-foreground">
                     Copy your Firebase project details below and paste them into
-                    the <Badge variant="outline">secrets.h</Badge> tab in the Wokwi simulation.
+                    the <Badge variant="outline">secrets.h</Badge> tab in the
+                    Wokwi simulation.
                   </p>
                   <div className="space-y-2 rounded-md bg-background/50 p-2">
-                    <CredentialDisplay label="Project ID" value={firebaseConfig.projectId} />
-                    <CredentialDisplay label="API Key" value={firebaseConfig.apiKey} />
+                    <CredentialDisplay
+                      label="Project ID"
+                      value={firebaseConfig.projectId}
+                    />
+                    <CredentialDisplay
+                      label="API Key"
+                      value={firebaseConfig.apiKey}
+                    />
                   </div>
                 </div>
               </div>
@@ -106,8 +112,9 @@ export default function ConnectivityPage() {
                 <div className="space-y-1">
                   <p className="font-semibold">Step 2: Run the Simulation</p>
                   <p className="text-sm text-muted-foreground">
-                    Click the green "play" button in the Wokwi simulation. Sensor
-                    readings will appear in the serial monitor as it connects.
+                    Click the green "play" button in the Wokwi simulation.
+                    Sensor readings will appear in the serial monitor as it
+                    connects.
                   </p>
                 </div>
               </div>
@@ -129,9 +136,14 @@ export default function ConnectivityPage() {
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Hardware Connectivity Diagram</CardTitle>
+          <CardTitle>How It Works: From Sensor to Screen</CardTitle>
           <CardDescription>
-            A visual representation of how the hardware components are connected.
+            The diagram below illustrates how data flows from the physical
+            sensors in the Wokwi simulation to your dashboard. The{' '}
+            <strong>MQ-135</strong> and other sensors measure pollutants, the{' '}
+            <strong>ESP32</strong> processes this data, and then it's sent to{' '}
+            <strong>Firebase</strong>. Your app reads from Firebase to display
+            the live <strong>AQI level</strong>.
           </CardDescription>
         </CardHeader>
         <CardContent>

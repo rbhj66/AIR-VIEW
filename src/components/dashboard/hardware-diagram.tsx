@@ -1,58 +1,41 @@
 'use client';
 
-import { ArrowRight, HardDrive, Cpu, Lightbulb } from 'lucide-react';
+import { ArrowRight, HardDrive, Cpu, Wifi } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
 export default function HardwareDiagram() {
   return (
     <div className="flex w-full items-center justify-center rounded-lg bg-muted/30 p-8">
-      <div className="relative flex w-full max-w-2xl items-center justify-between">
-        {/* MQ-135 Sensor */}
+      <div className="relative flex w-full max-w-4xl flex-col items-center justify-between gap-8 md:flex-row">
+        {/* Step 1: Sensor */}
         <div className="flex flex-col items-center gap-2 text-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-dashed border-primary bg-primary/10">
             <HardDrive className="h-8 w-8 text-primary" />
           </div>
-          <p className="text-sm font-semibold">MQ-135</p>
-          <p className="text-xs text-muted-foreground">Gas Sensor</p>
+          <p className="text-sm font-semibold">MQ-135 & Others</p>
+          <p className="text-xs text-muted-foreground">Air Quality Sensors</p>
         </div>
 
-        {/* Arrow to Microcontroller */}
-        <div className="absolute left-0 top-1/2 w-full -translate-y-1/2 px-24">
-          <div className="relative">
-            <div className="h-px w-full bg-border"></div>
-            <ArrowRight className="absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 translate-x-1/2 transform rounded-full bg-background" />
-            <span className="absolute left-1/2 top-0 -translate-y-full -translate-x-1/2 transform bg-muted/30 px-1 text-xs text-muted-foreground">
-              Analog Signal
-            </span>
-          </div>
-        </div>
+        <ArrowRight className="h-6 w-6 rotate-90 text-muted-foreground md:rotate-0" />
 
-        {/* Microcontroller */}
-        <div className="z-10 flex flex-col items-center gap-2 bg-background text-center">
+        {/* Step 2: Microcontroller */}
+        <div className="z-10 flex flex-col items-center gap-2 text-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-dashed border-accent bg-accent/10">
             <Cpu className="h-8 w-8 text-accent-foreground" />
           </div>
-          <p className="text-sm font-semibold">Microcontroller</p>
-          <p className="text-xs text-muted-foreground">e.g., ESP32</p>
+          <p className="text-sm font-semibold">ESP32</p>
+          <p className="text-xs text-muted-foreground">Microcontroller</p>
         </div>
 
-        {/* Arrow to Indicator */}
-         <div className="absolute right-0 top-1/2 w-full -translate-y-1/2 px-24">
-          <div className="relative">
-             <div className="h-px w-full bg-border"></div>
-            <ArrowRight className="absolute left-0 top-1/2 h-4 w-4 -translate-y-1/2 -translate-x-1/2 transform rounded-full bg-background" />
-             <span className="absolute right-1/2 top-full translate-x-1/2 transform bg-muted/30 px-1 text-xs text-muted-foreground">
-              Digital Signal
-            </span>
-          </div>
-        </div>
-        
-        {/* Indicator */}
+        <ArrowRight className="h-6 w-6 rotate-90 text-muted-foreground md:rotate-0" />
+
+        {/* Step 3: Firebase */}
         <div className="flex flex-col items-center gap-2 text-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-dashed border-destructive bg-destructive/10">
-            <Lightbulb className="h-8 w-8 text-destructive" />
+            <Wifi className="h-8 w-8 text-destructive" />
           </div>
-          <p className="text-sm font-semibold">Indicator</p>
-          <p className="text-xs text-muted-foreground">e.g., LED</p>
+          <p className="text-sm font-semibold">Firebase</p>
+          <p className="text-xs text-muted-foreground">Cloud Database</p>
         </div>
       </div>
     </div>
