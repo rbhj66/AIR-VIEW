@@ -3,7 +3,9 @@ import DeviceControlCard from '@/components/dashboard/device-control-card';
 import HistoricalDataChart from '@/components/dashboard/historical-data-chart';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FlaskConical, Beaker, Wind, ShieldAlert, CheckCircle } from 'lucide-react';
+import { FlaskConical, Beaker, Wind } from 'lucide-react';
+import AqiCircle from '@/components/dashboard/aqi-circle';
+
 
 const airQualityData = {
   aqi: 78,
@@ -30,19 +32,16 @@ const getStatusInfo = (status: string) => {
   switch (status.toLowerCase()) {
     case 'good':
       return {
-        icon: <CheckCircle className="h-10 w-10 text-green-500" />,
         color: 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',
         description: 'Air quality is considered satisfactory, and air pollution poses little or no risk.',
       };
     case 'moderate':
       return {
-        icon: <ShieldAlert className="h-10 w-10 text-yellow-500" />,
         color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300',
         description: 'Air quality is acceptable; however, for some pollutants there may be a moderate health concern.',
       };
     default:
       return {
-        icon: <ShieldAlert className="h-10 w-10 text-yellow-500" />,
         color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300',
         description: 'Air quality is acceptable.',
       };
@@ -61,14 +60,12 @@ export default function DashboardPage() {
                 <CardTitle>Overall Air Quality</CardTitle>
                 <CardDescription>{statusInfo.description}</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-6 md:grid-cols-3">
-              <div className="flex flex-col items-center justify-center gap-2 rounded-lg p-4 text-center md:col-span-1 md:border-r">
-                {statusInfo.icon}
-                <div className="text-5xl font-bold tracking-tight">{airQualityData.aqi}</div>
-                <div className="text-lg font-medium">AQI</div>
+            <CardContent className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <div className="flex flex-col items-center justify-center gap-4 rounded-lg p-4 text-center md:col-span-1">
+                <AqiCircle value={airQualityData.aqi} />
                 <Badge className={statusInfo.color}>{airQualityData.status}</Badge>
               </div>
-              <div className="col-span-2 grid grid-cols-2 gap-4">
+              <div className="col-span-1 grid grid-cols-1 gap-4 md:col-span-2 md:grid-cols-2">
                 <div className="flex items-start gap-3 rounded-lg bg-muted/50 p-4">
                   <div className="rounded-full bg-primary/10 p-2 text-primary">
                     <Wind className="h-6 w-6" />
