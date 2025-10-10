@@ -1,11 +1,12 @@
 
-
 import DeviceControlCard from '@/components/dashboard/device-control-card';
 import HistoricalDataChart from '@/components/dashboard/historical-data-chart';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FlaskConical, Wind, Biohazard } from 'lucide-react';
+import { FlaskConical, Wind, Biohazard, Beaker } from 'lucide-react';
 import AqiCircle from '@/components/dashboard/aqi-circle';
+import PredictionCard from '@/components/dashboard/prediction-card';
+import RecommendationsCard from '@/components/dashboard/recommendations-card';
 
 
 const airQualityData = {
@@ -129,26 +130,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex items-start gap-3 rounded-lg bg-muted/50 p-4">
                   <div className="rounded-full bg-primary/10 p-2 text-primary">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-6 w-6"
-                    >
-                      <path d="M6 15h4" />
-                      <path d="M9 12v6" />
-                      <path d="M15 12h4" />
-                      <path d="M15 9v6" />
-                      <path d="M12 9h.01" />
-                      <path d="M4.5 10.5c-2.4 1.5-4 4-4.5 7.5h21c-.5-3.5-2.1-6-4.5-7.5" />
-                      <path d="M15 6.5A2.5 2.5 0 0 0 12.5 4h-1A2.5 2.5 0 0 0 9 6.5" />
-                    </svg>
+                    <Beaker className="h-6 w-6" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">CO2</p>
@@ -167,6 +149,10 @@ export default function DashboardPage() {
         <div className="lg:col-span-3">
           <DeviceControlCard className="h-full" />
         </div>
+      </div>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
+        <PredictionCard />
+        <RecommendationsCard initialAirQuality={airQualityData} />
       </div>
       <div className="grid grid-cols-1 gap-4 lg:gap-8">
           <HistoricalDataChart />
