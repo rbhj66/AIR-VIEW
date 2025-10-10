@@ -16,6 +16,7 @@ import {
   Settings,
   LifeBuoy,
   PanelLeft,
+  Rss,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import DashboardHeader from '@/components/dashboard/header';
@@ -36,12 +37,24 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               <SidebarMenuItem>
                 <Button
                   variant="ghost"
-                  className="w-full justify-start gap-2 bg-accent text-accent-foreground"
+                  className="w-full justify-start gap-2"
                   asChild
                 >
                   <Link href="/dashboard">
                     <Home />
                     Dashboard
+                  </Link>
+                </Button>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2"
+                  asChild
+                >
+                  <Link href="/dashboard/connectivity">
+                    <Rss />
+                    Connectivity
                   </Link>
                 </Button>
               </SidebarMenuItem>
