@@ -1,11 +1,9 @@
 import AppLogo from '@/components/app-logo';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import HardwareDiagram from '@/components/dashboard/hardware-diagram';
 
 export default function WelcomePage() {
-  const heroImage = PlaceHolderImages.find((p) => p.id === 'hero-image');
   return (
     <div className="flex min-h-screen flex-col">
       <header className="flex h-16 items-center justify-between px-4 lg:px-6">
@@ -43,14 +41,9 @@ export default function WelcomePage() {
                   </Button>
                 </div>
               </div>
-              <Image
-                src={heroImage?.imageUrl || ''}
-                width="600"
-                height="400"
-                alt={heroImage?.description || 'Hero image'}
-                data-ai-hint={heroImage?.imageHint}
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full"
-              />
+              <div className="mx-auto flex w-full items-center justify-center">
+                <HardwareDiagram />
+              </div>
             </div>
           </div>
         </section>
