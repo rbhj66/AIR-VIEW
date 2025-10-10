@@ -1,7 +1,7 @@
 import AppLogo from '@/components/app-logo';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import HardwareDiagram from '@/components/dashboard/hardware-diagram';
+import FreshAirDiagram from '@/components/dashboard/fresh-air-diagram';
 
 export default function WelcomePage() {
   return (
@@ -43,9 +43,9 @@ export default function WelcomePage() {
               </div>
               <div className="mx-auto flex w-full flex-col items-center justify-center gap-4">
                 <h3 className="text-lg font-bold tracking-tight">
-                  Welcome Diagram
+                  Fresh Air Diagram
                 </h3>
-                <HardwareDiagram />
+                <FreshAirDiagram />
               </div>
             </div>
           </div>
