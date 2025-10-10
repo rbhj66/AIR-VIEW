@@ -72,7 +72,7 @@ export default function DashboardPage() {
       orderBy('timestamp', 'desc'),
       limit(1)
     );
-  }, [firestore]);
+  }, [firestore, sensorId]);
 
   const { data: readings, isLoading } = useCollection(readingsQuery);
   const latestReading = useMemo(() => readings?.[0] as any, [readings]);
