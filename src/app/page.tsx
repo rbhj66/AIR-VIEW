@@ -41,7 +41,10 @@ export default function WelcomePage() {
                   </Button>
                 </div>
               </div>
-              <div className="mx-auto flex w-full items-center justify-center">
+              <div className="mx-auto flex w-full flex-col items-center justify-center gap-4">
+                <h3 className="text-lg font-bold tracking-tight">
+                  Welcome Diagram
+                </h3>
                 <HardwareDiagram />
               </div>
             </div>
