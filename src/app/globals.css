@@ -98,4 +98,19 @@
       transform: translateX(20px);
     }
   }
+
+  @keyframes pulse-wave {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0%);
+    }
+  }
+
+  .animate-pulse-wave {
+      animation: pulse-wave 3s linear infinite;
+      transform: translateX(-25%);
+      width: 200%;
+  }
 }

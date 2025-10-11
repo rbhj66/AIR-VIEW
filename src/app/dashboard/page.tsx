@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore';
 import { useMemo } from 'react';
 import HarmfulGases from '@/components/dashboard/harmful-gases';
+import LivePulseChart from '@/components/dashboard/live-pulse-chart';
 
 export default function DashboardPage() {
   const firestore = useFirestore();
@@ -47,6 +48,7 @@ export default function DashboardPage() {
           co2={airQualityData.co2.value} 
           vocs={airQualityData.vocs.value} 
         />
+        <LivePulseChart />
       </div>
     </main>
   );

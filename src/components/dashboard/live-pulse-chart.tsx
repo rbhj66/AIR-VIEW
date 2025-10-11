@@ -1,0 +1,77 @@
+'use client';
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Activity } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+export default function LivePulseChart() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Activity /> System Status
+        </CardTitle>
+        <CardDescription>
+          A real-time visualization of system activity.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="relative h-40 w-full overflow-hidden rounded-lg bg-muted/20">
+          <svg
+            className="absolute inset-0 h-full w-full"
+            preserveAspectRatio="none"
+          >
+            <defs>
+              <linearGradient
+                id="pulseGradient"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop
+                  offset="5%"
+                  stopColor="hsl(var(--primary))"
+                  stopOpacity={0.4}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="hsl(var(--primary))"
+                  stopOpacity={0}
+                />
+              </linearGradient>
+            </defs>
+            <path
+              d="M0,80 Q100,20 200,80 T400,80 Q500,140 600,80 T800,80"
+              stroke="hsl(var(--primary))"
+              fill="url(#pulseGradient)"
+              strokeWidth="3"
+              className="animate-pulse-wave"
+            />
+          </svg>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Add keyframes for the animation in globals.css
+// @layer utilities {
+//   @keyframes pulse-wave {
+//     0% {
+//       transform: translateX(-100%);
+//     }
+//     100% {
+//       transform: translateX(0);
+//     }
+//   }
+//   .animate-pulse-wave {
+//     animation: pulse-wave 4s linear infinite;
+//   }
+// }
