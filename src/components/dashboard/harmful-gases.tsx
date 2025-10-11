@@ -110,7 +110,7 @@ export default function HarmfulGases({ isLoading, co2Data, vocsData }: HarmfulGa
   return (
     <Card>
       <CardHeader>
-        <CardTitle className='flex items-center gap-2'><Wind /> Hazardous Gases</CardTitle>
+        <CardTitle className='flex items-center gap-2'><Wind /> Common Air Pollutants</CardTitle>
         <CardDescription>
           Common indoor pollutants and their typical concentration levels.
         </CardDescription>
