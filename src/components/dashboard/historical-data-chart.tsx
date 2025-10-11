@@ -5,6 +5,7 @@ import {
   CartesianGrid,
   XAxis,
   YAxis,
+  Tooltip,
 } from 'recharts';
 
 import {
@@ -16,7 +17,6 @@ import {
 } from '@/components/ui/card';
 import {
   ChartContainer,
-  ChartTooltip,
   ChartTooltipContent,
   ChartConfig,
 } from '@/components/ui/chart';
@@ -31,6 +31,7 @@ import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, limit, query, orderBy, where, Timestamp } from 'firebase/firestore';
 import { useState, useMemo } from 'react';
 import { Skeleton } from '../ui/skeleton';
+import { History } from 'lucide-react';
 
 // Simplified AQI calculation (not official)
 const calculateAqi = (pm25: number) => {
@@ -50,14 +51,6 @@ const chartConfigs: Record<Metric, ChartConfig> = {
   pm10: { pm10: { label: 'PM10', color: 'hsl(var(--chart-3))' } },
   co2: { co2: { label: 'CO2', color: 'hsl(var(--chart-4))' } },
   vocs: { vocs: { label: 'VOCs', color: 'hsl(var(--chart-5))' } },
-};
-
-const metricLabels: Record<Metric, string> = {
-  aqi: 'AQI',
-  pm25: 'PM2.5 (μg/m³)',
-  pm10: 'PM10 (μg/m³)',
-  co2: 'CO2 (ppm)',
-  vocs: 'VOCs (ppb)',
 };
 
 export default function HistoricalDataChart({ className, sensorId }: { className?: string, sensorId: string }) {
@@ -92,7 +85,7 @@ export default function HistoricalDataChart({ className, sensorId }: { className
     <Card className={className}>
       <CardHeader className="flex-row items-center justify-between gap-4">
         <div className='flex-1'>
-          <CardTitle>Historical Air Quality</CardTitle>
+          <CardTitle className='flex items-center gap-2'><History />Historical Air Quality</CardTitle>
           <CardDescription>
             Trends for your sensor over the selected period.
           </CardDescription>
@@ -146,18 +139,21 @@ export default function HistoricalDataChart({ className, sensorId }: { className
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              minTickGap={30}
+              tickFormatter={(value) => value.slice(0, 6)}
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => `${value}`}
               domain={['dataMin', 'dataMax']}
             />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent labelFormatter={(value, payload) => payload[0]?.payload.date} />} />
+            <Tooltip
+                cursor={false}
+                content={<ChartTooltipContent indicator="dot" />}
+              />
             <defs>
-              <linearGradient id={`fill${metric}`} x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id={`fill-${metric}`} x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
                   stopColor={`var(--color-${metric})`}
@@ -173,8 +169,7 @@ export default function HistoricalDataChart({ className, sensorId }: { className
             <Area
               dataKey={metric}
               type="natural"
-              fill={`url(#fill${metric})`}
-              fillOpacity={0.4}
+              fill={`url(#fill-${metric})`}
               stroke={`var(--color-${metric})`}
               stackId="a"
             />
