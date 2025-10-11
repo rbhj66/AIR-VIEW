@@ -87,7 +87,7 @@ export default function ConnectivityPage() {
                   <FileCode className="h-5 w-5" />
                 </div>
                 <div className="w-full space-y-2">
-                  <p className="font-semibold">Step 1: Configure Credentials</p>
+                  <div className="font-semibold">Step 1: Configure Credentials</div>
                   <div className="text-sm text-muted-foreground">
                     Copy your Firebase project details below and paste them into
                     the <Badge variant="outline">secrets.h</Badge> tab in the
