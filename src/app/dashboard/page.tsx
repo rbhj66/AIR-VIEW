@@ -5,7 +5,6 @@ import {
   collection,
   query,
   orderBy,
-  limit,
   Timestamp,
 } from 'firebase/firestore';
 import { useMemo } from 'react';
@@ -136,11 +135,13 @@ export default function DashboardPage() {
               <h3 className="text-2xl font-bold">
                 {isLoading ? <Skeleton className="h-8 w-48" /> : airQualityData.aqi.status}
               </h3>
-              <p className="text-muted-foreground">
-                {isLoading ? <Skeleton className="h-4 w-full" /> : 
-                `Live AQI is ${airQualityData.aqi.value}. The air quality is currently considered ${airQualityData.aqi.status.toLowerCase()}.`
-                }
-              </p>
+              <div className="text-muted-foreground">
+                {isLoading ? (
+                  <Skeleton className="h-4 w-full" />
+                ) : (
+                  `Live AQI is ${airQualityData.aqi.value}. The air quality is currently considered ${airQualityData.aqi.status.toLowerCase()}.`
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
