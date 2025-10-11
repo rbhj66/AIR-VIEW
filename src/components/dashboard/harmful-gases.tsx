@@ -106,15 +106,14 @@ export default function HarmfulGases({
                     <Cloud className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                    <p className="text-sm font-medium text-muted-foreground">CO₂</p>
                     {isLoading ? (
                     <>
-                        <Skeleton className="mt-1 h-7 w-20" />
-                        <Skeleton className="mt-1 h-4 w-12" />
+                        <Skeleton className="h-5 w-24" />
+                        <Skeleton className="mt-2 h-4 w-12" />
                     </>
                     ) : (
                     <>
-                        <p className="text-2xl font-bold">{co2.value} ppm</p>
+                        <p className="text-xl font-bold">CO₂: {co2.value} <span className="text-sm font-normal text-muted-foreground">ppm</span></p>
                         <p className="text-sm text-muted-foreground">{co2Status}</p>
                     </>
                     )}
@@ -128,15 +127,14 @@ export default function HarmfulGases({
                     <FlaskConical className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                    <p className="text-sm font-medium text-muted-foreground">VOCs</p>
                     {isLoading ? (
                     <>
-                        <Skeleton className="mt-1 h-7 w-20" />
-                        <Skeleton className="mt-1 h-4 w-12" />
+                        <Skeleton className="h-5 w-24" />
+                        <Skeleton className="mt-2 h-4 w-12" />
                     </>
                     ) : (
                     <>
-                        <p className="text-2xl font-bold">{vocs.value} ppb</p>
+                        <p className="text-xl font-bold">VOCs: {vocs.value} <span className="text-sm font-normal text-muted-foreground">ppb</span></p>
                         <p className="text-sm text-muted-foreground">{vocsStatus}</p>
                     </>
                     )}
@@ -150,15 +148,14 @@ export default function HarmfulGases({
                 <O2Icon />
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Oxygen</p>
                 {isLoading ? (
                   <>
-                    <Skeleton className="mt-1 h-7 w-20" />
-                    <Skeleton className="mt-1 h-4 w-12" />
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="mt-2 h-4 w-12" />
                   </>
                 ) : (
                   <>
-                    <p className="text-2xl font-bold">20.9%</p>
+                    <p className="text-xl font-bold">Oxygen: 20.9%</p>
                     <p className="text-sm text-muted-foreground">Normal</p>
                   </>
                 )}
