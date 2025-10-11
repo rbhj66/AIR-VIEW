@@ -68,7 +68,8 @@ export default function DashboardPage() {
     if (!firestore) return null;
     return query(
       collection(firestore, 'sensors', sensorId, 'readings'),
-      orderBy('timestamp', 'desc')
+      orderBy('timestamp', 'desc'),
+      limit(10)
     );
   }, [firestore, sensorId]);
 
