@@ -216,7 +216,7 @@ export default function DashboardPage() {
                 <CardTitle>Overall Air Quality</CardTitle>
                 <CardDescription>{isLoading ? 'Loading live data...' : statusInfo.description}</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col md:flex-row items-center justify-center gap-4">
+            <CardContent className="flex flex-col md:flex-row items-center justify-around gap-4">
                <div className="flex flex-col items-center justify-center gap-4 rounded-lg p-4 text-center">
                 {isLoading || airQualityData.aqi === null ? <Skeleton className="h-48 w-48 rounded-full" /> : <AqiCircle value={airQualityData.aqi} />}
                 {isLoading || airQualityData.aqi === null ? <Skeleton className="h-6 w-24 rounded-full" /> : <Badge className={statusInfo.color}>{airQualityData.status}</Badge>}
@@ -230,7 +230,13 @@ export default function DashboardPage() {
                 <PurifiedAqiIndicator purifiedAqi={airQualityData.purifiedAqi} />
                 </>
               )}
-               <I2CDisplay aqi={airQualityData.aqi} isLoading={isLoading} />
+               <I2CDisplay 
+                  aqi={airQualityData.aqi}
+                  pm25={airQualityData.pm25.value}
+                  temperature={airQualityData.temperature.value}
+                  humidity={airQualityData.humidity.value}
+                  isLoading={isLoading} 
+                />
             </CardContent>
           </Card>
           <DeviceControlCard className="h-full" />
