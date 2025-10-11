@@ -119,7 +119,7 @@ export default function HarmfulGases({ isLoading, co2Data, vocsData }: HarmfulGa
         <StaticGasIndicator name="Carbon Dioxide" formula="CO2" value="450" unit="ppm" icon={<Cloud className="h-10 w-10" />} />
         <StaticGasIndicator name="Volatile Organic Compounds" formula="VOCs" value="120" unit="ppb" icon={<FlaskConical className="h-10 w-10" />} />
         <StaticGasIndicator name="Particulate Matter 2.5" formula="PM2.5" value="15" unit="μg/m³" icon={<Sparkles className="h-10 w-10" />} />
-        <StaticGasIndicator name="Particulate Matter 10" formula="PM10" value="25" unit="μg/m³" icon={<Sparkles className="h-10 w-10 opacity-70" />} />
+        <StaticGasIndicator name="Oxygen" formula="O2" value="21" unit="%" icon={<Wind className="h-10 w-10" />} />
         <StaticGasIndicator name="Ozone" formula="O3" value="0.03" unit="ppm" icon={<Wind className="h-10 w-10" />} />
         <StaticGasIndicator name="Nitrogen Dioxide" formula="NO2" value="0.01" unit="ppm" icon={<FlaskConical className="h-10 w-10 opacity-70" />} />
 
