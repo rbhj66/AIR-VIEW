@@ -23,11 +23,13 @@ import { ChartDataPoint } from '@/lib/types';
 import { useMemo } from 'react';
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
+import { cn } from '@/lib/utils';
 
 interface HarmfulGasesProps {
   isLoading: boolean;
   co2: { value: number | null; history: ChartDataPoint[] };
   vocs: { value: number | null; history: ChartDataPoint[] };
+  className?: string;
 }
 
 const getStatus = (
@@ -122,11 +124,12 @@ export default function HarmfulGases({
   isLoading,
   co2,
   vocs,
+  className
 }: HarmfulGasesProps) {
   const co2Status = getStatus(co2.value, { good: 1000, moderate: 2000 });
   const vocsStatus = getStatus(vocs.value, { good: 300, moderate: 500 });
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader>
         <CardTitle>Common Air Pollutants</CardTitle>
         <CardDescription>

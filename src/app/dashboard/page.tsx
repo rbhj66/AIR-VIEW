@@ -12,6 +12,7 @@ import { useMemo } from 'react';
 import HarmfulGases from '@/components/dashboard/harmful-gases';
 import LivePulseChart from '@/components/dashboard/live-pulse-chart';
 import HistoricalDataChart from '@/components/dashboard/historical-data-chart';
+import LiveAqiCard from '@/components/dashboard/live-aqi-card';
 
 export default function DashboardPage() {
   const firestore = useFirestore();
@@ -40,6 +41,7 @@ export default function DashboardPage() {
     const vocs = latestReading?.vocs ?? null;
     const temperature = latestReading?.temperature ?? null;
     const humidity = latestReading?.humidity ?? null;
+    const pm25 = latestReading?.pm25 ?? null;
 
     const getTime = (r: any) => r.timestamp.toDate().toLocaleTimeString();
     
@@ -50,6 +52,7 @@ export default function DashboardPage() {
     const humidityHistory = orderedReadings.map(r => ({ time: getTime(r), value: r.humidity }));
 
     return {
+      pm25: { value: pm25 },
       co2: { value: co2, history: co2History },
       vocs: { value: vocs, history: vocsHistory },
       temperature: { value: temperature, history: temperatureHistory },
@@ -59,11 +62,15 @@ export default function DashboardPage() {
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-6 md:gap-8">
-      <HarmfulGases 
-        isLoading={isDataLoading} 
-        co2={airQualityData.co2}
-        vocs={airQualityData.vocs}
-      />
+       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
+          <LiveAqiCard isLoading={isDataLoading} pm25={airQualityData.pm25.value} />
+          <HarmfulGases 
+            isLoading={isDataLoading} 
+            co2={airQualityData.co2}
+            vocs={airQualityData.vocs}
+            className="lg:col-span-2"
+          />
+      </div>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
         <LivePulseChart />
         <HistoricalDataChart sensorId={sensorId} />
