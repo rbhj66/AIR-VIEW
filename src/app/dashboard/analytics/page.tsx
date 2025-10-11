@@ -3,8 +3,9 @@ import PollutantDistributionChart from '@/components/dashboard/analytics/polluta
 import HourlyAqiTrends from '@/components/dashboard/analytics/hourly-aqi-trends';
 import DeviceCorrelationChart from '@/components/dashboard/analytics/device-correlation-chart';
 import { useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, limit, Timestamp, where } from 'firebase/firestore';
+import { collection, query, orderBy, Timestamp, where } from 'firebase/firestore';
 import { useCollection } from '@/firebase/firestore/use-collection';
+import PredictionCard from '@/components/dashboard/prediction-card';
 
 export default function AnalyticsPage() {
   const firestore = useFirestore();
@@ -35,6 +36,9 @@ export default function AnalyticsPage() {
           sensorReadings={sensorReadings}
           isLoading={isLoadingReadings}
         />
+      </div>
+      <div className="grid grid-cols-1 gap-4 lg:gap-8">
+        <PredictionCard />
       </div>
        <div className="grid grid-cols-1 gap-4 lg:gap-8">
           <DeviceCorrelationChart 
