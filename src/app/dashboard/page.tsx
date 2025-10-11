@@ -210,7 +210,7 @@ export default function DashboardPage() {
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-6 md:gap-8">
       <AirQualityAlert aqi={airQualityData.aqi ?? 0} isLoading={isLoading} />
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
+      <div className="grid grid-cols-1 gap-4 lg:gap-8">
          <Card>
             <CardHeader>
                 <CardTitle>Overall Air Quality</CardTitle>
@@ -237,22 +237,6 @@ export default function DashboardPage() {
                   humidity={airQualityData.humidity.value}
                   isLoading={isLoading} 
                 />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-                <CardTitle>Live Sensor Simulation</CardTitle>
-                <CardDescription>This is a live Wokwi simulation of an ESP32 microcontroller.</CardDescription>
-            </CardHeader>
-             <CardContent>
-              <div className="aspect-[4/3] w-full">
-                <iframe
-                  src="https://wokwi.com/projects/393138883758206977?embed=1"
-                  className="h-full w-full rounded-md border"
-                  allow="autoplay; encrypted-media"
-                  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-                ></iframe>
-              </div>
             </CardContent>
           </Card>
       </div>
