@@ -145,7 +145,7 @@ export default function HarmfulGases({
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                   <Cloud className="h-6 w-6 text-primary" />
                 </div>
-                <div>
+                <div className="flex-1">
                   {isLoading ? (
                     <>
                       <Skeleton className="h-5 w-24" />
@@ -154,9 +154,10 @@ export default function HarmfulGases({
                   ) : (
                     <>
                       <p className="text-xl font-bold">CO₂</p>
-                      <p className="text-sm text-muted-foreground">
-                        {co2Status}
+                       <p className="text-sm text-muted-foreground">
+                        <span className='font-semibold'>{co2.value ?? '--'}</span> ppm
                       </p>
+                      <Badge variant="outline" className="mt-1">{co2Status}</Badge>
                     </>
                   )}
                 </div>
@@ -207,7 +208,7 @@ export default function HarmfulGases({
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                   <FlaskConical className="h-6 w-6 text-primary" />
                 </div>
-                <div>
+                <div className="flex-1">
                   {isLoading ? (
                     <>
                       <Skeleton className="h-5 w-24" />
@@ -217,8 +218,9 @@ export default function HarmfulGases({
                     <>
                       <p className="text-xl font-bold">VOCs</p>
                       <p className="text-sm text-muted-foreground">
-                        {vocsStatus}
+                        <span className='font-semibold'>{vocs.value ?? '--'}</span> ppb
                       </p>
+                       <Badge variant="outline" className="mt-1">{vocsStatus}</Badge>
                     </>
                   )}
                 </div>
@@ -267,7 +269,7 @@ export default function HarmfulGases({
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                     <O2Icon />
                   </div>
-                  <div>
+                  <div className='flex-1'>
                     {isLoading ? (
                       <>
                         <Skeleton className="h-5 w-24" />
@@ -276,7 +278,10 @@ export default function HarmfulGases({
                     ) : (
                       <>
                         <p className="text-xl font-bold">O₂</p>
-                        <p className="text-sm text-muted-foreground">Normal</p>
+                        <p className="text-sm text-muted-foreground">
+                          <span className='font-semibold'>20.9</span> %
+                        </p>
+                        <Badge variant="outline" className="mt-1">Normal</Badge>
                       </>
                     )}
                   </div>
