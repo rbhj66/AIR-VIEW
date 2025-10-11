@@ -14,7 +14,7 @@ export default function I2CDisplay({ aqi, pm25, temperature, humidity, isLoading
     return <Skeleton className="h-[124px] w-48 rounded-md" />;
   }
 
-  const formatValue = (value: number | null) => value?.toFixed(1) ?? '---';
+  const formatValue = (value: number | null, decimalPlaces: number = 1) => value?.toFixed(decimalPlaces) ?? '---';
 
   return (
     <div className="flex flex-col items-center justify-center gap-1 rounded-md border-2 border-blue-800 bg-[#00008B] p-2 font-mono text-base text-white shadow-inner">
@@ -30,7 +30,7 @@ export default function I2CDisplay({ aqi, pm25, temperature, humidity, isLoading
         </div>
         <div className="flex items-center justify-between">
             <span>Temp:</span>
-            <span className="font-bold">{formatValue(temperature)} C</span>
+            <span className="font-bold">{formatValue(temperature)} &deg;C</span>
         </div>
         <div className="flex items-center justify-between">
             <span>Hum:</span>
