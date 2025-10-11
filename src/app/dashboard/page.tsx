@@ -38,28 +38,36 @@ export default function DashboardPage() {
   const airQualityData = useMemo(() => {
     const co2 = latestReading?.co2 ?? null;
     const vocs = latestReading?.vocs ?? null;
+    const temperature = latestReading?.temperature ?? null;
+    const humidity = latestReading?.humidity ?? null;
+
+    const getTime = (r: any) => r.timestamp.toDate().toLocaleTimeString();
     
     // Prepare data for mini-charts
-    const co2History = orderedReadings.map(r => ({ time: r.timestamp.toDate().toLocaleTimeString(), value: r.co2 }));
-    const vocsHistory = orderedReadings.map(r => ({ time: r.timestamp.toDate().toLocaleTimeString(), value: r.vocs }));
+    const co2History = orderedReadings.map(r => ({ time: getTime(r), value: r.co2 }));
+    const vocsHistory = orderedReadings.map(r => ({ time: getTime(r), value: r.vocs }));
+    const temperatureHistory = orderedReadings.map(r => ({ time: getTime(r), value: r.temperature }));
+    const humidityHistory = orderedReadings.map(r => ({ time: getTime(r), value: r.humidity }));
 
     return {
       co2: { value: co2, history: co2History },
       vocs: { value: vocs, history: vocsHistory },
+      temperature: { value: temperature, history: temperatureHistory },
+      humidity: { value: humidity, history: humidityHistory },
     };
   }, [latestReading, orderedReadings]);
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-6 md:gap-8">
+      <HarmfulGases 
+        isLoading={isDataLoading} 
+        co2Data={airQualityData.co2} 
+        vocsData={airQualityData.vocs}
+        temperatureData={airQualityData.temperature}
+        humidityData={airQualityData.humidity}
+      />
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
-        <HarmfulGases 
-          isLoading={isDataLoading} 
-          co2Data={airQualityData.co2} 
-          vocsData={airQualityData.vocs} 
-        />
         <LivePulseChart />
-      </div>
-      <div className="grid grid-cols-1 gap-4 lg:gap-8">
         <HistoricalDataChart sensorId={sensorId} />
       </div>
     </main>
