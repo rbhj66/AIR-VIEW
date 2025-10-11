@@ -62,19 +62,7 @@ export default function AnimatedPollutantPieChart({ sensorReadings, isLoading }:
     ];
   }, [sensorReadings]);
 
-  if (isLoading) {
-    return (
-        <Card>
-            <CardHeader>
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-            </CardHeader>
-            <CardContent className="flex items-center justify-center pb-0">
-                <Skeleton className="h-48 w-48 rounded-full" />
-            </CardContent>
-        </Card>
-    )
-  }
+  const showSkeleton = isLoading || chartData.length === 0;
 
   return (
     <Card>
@@ -85,7 +73,11 @@ export default function AnimatedPollutantPieChart({ sensorReadings, isLoading }:
         </CardDescription>
       </CardHeader>
       <CardContent className="flex items-center justify-center pb-0">
-        {chartData.length > 0 ? (
+        {showSkeleton ? (
+          <div className="flex h-[300px] w-full flex-col items-center justify-center gap-2 text-center text-muted-foreground">
+            <Skeleton className="h-48 w-48 rounded-full" />
+          </div>
+        ) : (
           <ChartContainer
             config={chartConfig}
             className="mx-auto aspect-square max-h-[300px]"
@@ -116,11 +108,6 @@ export default function AnimatedPollutantPieChart({ sensorReadings, isLoading }:
               />
             </PieChart>
           </ChartContainer>
-        ) : (
-             <div className="flex h-[300px] w-full flex-col items-center justify-center gap-2 text-center text-muted-foreground">
-                <p>No data from sensor yet.</p>
-                <p className="text-xs">Make sure the Wokwi simulation is running on the Connectivity page.</p>
-             </div>
         )}
       </CardContent>
     </Card>
