@@ -53,6 +53,7 @@ export default function DashboardPage() {
     if (isDataAvailable) {
       return {
         pm25: { value: latestReading.pm25 ?? null },
+        pm10: { value: latestReading.pm10 ?? null },
         co2: { value: latestReading.co2 ?? null, history: orderedReadings.map(r => ({ time: getTime(r), value: r.co2 })) },
         vocs: { value: latestReading.vocs ?? null, history: orderedReadings.map(r => ({ time: getTime(r), value: r.vocs })) },
         temperature: { value: latestReading.temperature ?? null, history: orderedReadings.map(r => ({ time: getTime(r), value: r.temperature })) },
@@ -74,6 +75,7 @@ export default function DashboardPage() {
 
     return {
       pm25: { value: parseFloat((10 + (Math.sin(mockTick * 0.5) * 5)).toFixed(1))},
+      pm10: { value: parseFloat((15 + (Math.cos(mockTick * 0.5) * 7)).toFixed(1))},
       co2: { value: parseFloat((450 + Math.sin(mockTick * 0.4) * 50).toFixed(0)), history: generateHistory(450, 50, mockTick) },
       vocs: { value: parseFloat((150 + Math.cos(mockTick * 0.6) * 20).toFixed(0)), history: generateHistory(150, 20, mockTick) },
       temperature: { value: mockTemp, history: generateHistory(21, 1, mockTick) },

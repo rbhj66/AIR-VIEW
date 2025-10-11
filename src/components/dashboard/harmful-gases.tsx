@@ -145,12 +145,12 @@ export default function HarmfulGases({
                   <Cloud className="h-6 w-6 text-primary" />
                 </div>
                 <div className="flex-1 space-y-1">
-                  <p className="text-xl font-bold">CO₂</p>
+                  <p className="font-semibold text-muted-foreground">CO₂</p>
                    {isLoading ? (
-                      <Skeleton className="h-5 w-12" />
+                      <Skeleton className="h-7 w-20" />
                   ) : (
-                    <p className="text-lg font-semibold text-muted-foreground">
-                      {co2.value ?? '--'} <span className="text-sm">ppm</span>
+                    <p className="text-2xl font-bold">
+                      {co2.value ?? '--'} <span className="text-lg font-medium text-muted-foreground">ppm</span>
                     </p>
                   )}
                   <Badge variant="outline">{co2Status}</Badge>
@@ -203,12 +203,12 @@ export default function HarmfulGases({
                   <FlaskConical className="h-6 w-6 text-primary" />
                 </div>
                  <div className="flex-1 space-y-1">
-                  <p className="text-xl font-bold">VOCs</p>
+                  <p className="font-semibold text-muted-foreground">VOCs</p>
                   {isLoading ? (
-                    <Skeleton className="h-5 w-12" />
+                    <Skeleton className="h-7 w-20" />
                   ) : (
-                    <p className="text-lg font-semibold text-muted-foreground">
-                      {vocs.value ?? '--'} <span className="text-sm">ppb</span>
+                    <p className="text-2xl font-bold">
+                      {vocs.value ?? '--'} <span className="text-lg font-medium text-muted-foreground">ppb</span>
                     </p>
                   )}
                   <Badge variant="outline">{vocsStatus}</Badge>
@@ -259,12 +259,12 @@ export default function HarmfulGases({
                     <O2Icon />
                   </div>
                    <div className="flex-1 space-y-1">
-                    <p className="text-xl font-bold">O₂</p>
+                    <p className="font-semibold text-muted-foreground">O₂</p>
                     {isLoading ? (
-                        <Skeleton className="h-5 w-12" />
+                        <Skeleton className="h-7 w-20" />
                     ) : (
-                        <p className="text-lg font-semibold text-muted-foreground">
-                        20.9 <span className="text-sm">%</span>
+                        <p className="text-2xl font-bold">
+                        20.9 <span className="text-lg font-medium text-muted-foreground">%</span>
                         </p>
                     )}
                     <Badge variant="outline">Normal</Badge>

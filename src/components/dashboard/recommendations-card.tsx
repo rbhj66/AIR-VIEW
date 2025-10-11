@@ -42,7 +42,7 @@ interface RecommendationsCardProps {
     pm25: { value: number | null };
     pm10: { value: number | null };
     co2: { value: number | null };
-    voc: { value: number | null };
+    vocs: { value: number | null };
   };
 }
 
@@ -73,7 +73,7 @@ export default function RecommendationsCard({
         <input type="hidden" name="pm25" value={initialAirQuality.pm25.value ?? 0} />
         <input type="hidden" name="pm10" value={initialAirQuality.pm10.value ?? 0} />
         <input type="hidden" name="co2" value={initialAirQuality.co2.value ?? 0} />
-        <input type="hidden" name="vocs" value={initialAirQuality.voc.value ?? 0} />
+        <input type="hidden" name="vocs" value={initialAirQuality.vocs.value ?? 0} />
 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
