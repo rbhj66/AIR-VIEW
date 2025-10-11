@@ -1,7 +1,7 @@
 'use client';
 
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, Timestamp, where } from 'firebase/firestore';
+import { collection, query, orderBy, limit } from 'firebase/firestore';
 import { useMemo } from 'react';
 import I2CDisplay from '@/components/dashboard/i2c-display';
 
@@ -37,18 +37,18 @@ export default function DashboardPage() {
     if (!latestReading) {
       return {
         aqi: null,
-        pm25: { value: null },
-        temperature: { value: null },
-        humidity: { value: null },
+        pm25: null,
+        temperature: null,
+        humidity: null,
       };
     }
     const aqi = calculateAqi(latestReading.pm25);
 
     return {
       aqi,
-      pm25: { value: latestReading.pm25 },
-      temperature: { value: latestReading.temperature },
-      humidity: { value: latestReading.humidity },
+      pm25: latestReading.pm25,
+      temperature: latestReading.temperature,
+      humidity: latestReading.humidity,
     };
   }, [latestReading]);
   
@@ -56,9 +56,9 @@ export default function DashboardPage() {
     <main className="flex flex-1 items-center justify-center p-4 sm:px-6 sm:py-6">
       <I2CDisplay 
           aqi={airQualityData.aqi}
-          pm25={airQualityData.pm25.value}
-          temperature={airQualityData.temperature.value}
-          humidity={airQualityData.humidity.value}
+          pm25={airQualityData.pm25}
+          temperature={airQualityData.temperature}
+          humidity={airQualityData.humidity}
           isLoading={isLoading} 
         />
     </main>
