@@ -26,6 +26,7 @@ import AqiCircle from '@/components/dashboard/aqi-circle';
 import { Skeleton } from '@/components/ui/skeleton';
 import HarmfulGases from '@/components/dashboard/harmful-gases';
 import AirQualityAlert from '@/components/dashboard/air-quality-alert';
+import I2CDisplay from '@/components/dashboard/i2c-display';
 
 // Simplified AQI calculation (not official)
 const calculateAqi = (pm25: number) => {
@@ -148,7 +149,16 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-        <DeviceControlCard />
+        <div className="flex flex-col gap-4">
+           <DeviceControlCard />
+           <I2CDisplay 
+            aqi={airQualityData.aqi.value}
+            pm25={airQualityData.pm25.value}
+            temperature={airQualityData.temperature.value}
+            humidity={airQualityData.humidity.value}
+            isLoading={isLoading}
+           />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
