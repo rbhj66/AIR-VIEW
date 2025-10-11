@@ -61,10 +61,8 @@ export default function DashboardPage() {
     <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-6 md:gap-8">
       <HarmfulGases 
         isLoading={isDataLoading} 
-        co2Data={airQualityData.co2} 
-        vocsData={airQualityData.vocs}
-        temperatureData={airQualityData.temperature}
-        humidityData={airQualityData.humidity}
+        co2={airQualityData.co2.value}
+        vocs={airQualityData.vocs.value}
       />
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
         <LivePulseChart />
