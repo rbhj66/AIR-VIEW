@@ -11,6 +11,7 @@ import {
 import { useMemo } from 'react';
 import HarmfulGases from '@/components/dashboard/harmful-gases';
 import LivePulseChart from '@/components/dashboard/live-pulse-chart';
+import HistoricalDataChart from '@/components/dashboard/historical-data-chart';
 
 export default function DashboardPage() {
   const firestore = useFirestore();
@@ -50,13 +51,16 @@ export default function DashboardPage() {
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-6 md:gap-8">
-       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
         <HarmfulGases 
           isLoading={isDataLoading} 
           co2Data={airQualityData.co2} 
           vocsData={airQualityData.vocs} 
         />
         <LivePulseChart />
+      </div>
+      <div className="grid grid-cols-1 gap-4 lg:gap-8">
+        <HistoricalDataChart sensorId={sensorId} />
       </div>
     </main>
   );
