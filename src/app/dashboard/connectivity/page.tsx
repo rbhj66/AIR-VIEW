@@ -244,7 +244,7 @@ export default function ConnectivityPage() {
                 {airQualityData.isLoading ? <Skeleton className="h-8 w-48" /> : airQualityData.aqi.status}
               </h3>
               <div className="text-muted-foreground">
-                {airQualityData.isLoading ? (
+                {airQualityData.isLoading && !isDataAvailable ? (
                   <div className="space-y-2">
                     <p>Waiting for live sensor data...</p>
                     <Skeleton className="h-4 w-full" />
@@ -297,4 +297,5 @@ export default function ConnectivityPage() {
       </Card>
     </main>
   );
-}
+
+    
