@@ -63,7 +63,7 @@ export default function ConnectivityPage() {
             <CardContent>
               <div className="aspect-[16/9] w-full">
                 <iframe
-                  src="https://wokwi.com/projects/399949987878844417?embed=1"
+                  src="https://wokwi.com/projects/393138883758206977?embed=1"
                   className="h-full w-full rounded-md border"
                   allow="autoplay; encrypted-media"
                   sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
