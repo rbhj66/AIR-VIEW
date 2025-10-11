@@ -13,6 +13,8 @@ import LivePulseChart from '@/components/dashboard/live-pulse-chart';
 import HistoricalDataChart from '@/components/dashboard/historical-data-chart';
 import LiveAqiCard from '@/components/dashboard/live-aqi-card';
 import TemperatureAndHumidity from '@/components/dashboard/temperature-and-humidity';
+import HistoricalSummary from '@/components/dashboard/historical-summary';
+
 
 export default function DashboardPage() {
   const firestore = useFirestore();
@@ -39,13 +41,12 @@ export default function DashboardPage() {
   
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (!isDataAvailable) {
-       interval = setInterval(() => {
-        setMockTick(tick => tick + 1);
-      }, 2000);
-    }
+    // Always run the mock tick to ensure values change if data stops
+     interval = setInterval(() => {
+      setMockTick(tick => tick + 1);
+    }, 2000);
     return () => clearInterval(interval);
-  }, [isDataAvailable]);
+  }, []);
 
   const airQualityData = useMemo(() => {
     const getTime = (r: any) => r.timestamp.toDate().toLocaleTimeString();
@@ -78,19 +79,17 @@ export default function DashboardPage() {
       vocs: { value: parseFloat((150 + Math.cos(mockTick * 0.6) * 20).toFixed(0)), history: generateHistory(150, 20, mockTick) },
       temperature: { value: mockTemp, history: generateHistory(21, 1, mockTick) },
       humidity: { value: mockHumidity, history: generateHistory(45, 5, mockTick) },
-      isLoading: true, // Indicate that we are using mock/loading data
+      isLoading: !isDataAvailable, // Indicate that we are using mock/loading data
     };
 
   }, [latestReading, orderedReadings, isDataAvailable, mockTick]);
 
-  const isDataLoading = !isDataAvailable && airQualityData.isLoading;
-
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-6 md:gap-8">
        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
-          <LiveAqiCard isLoading={isDataLoading} pm25={airQualityData.pm25.value} />
+          <LiveAqiCard isLoading={airQualityData.isLoading} pm25={airQualityData.pm25.value} />
           <HarmfulGases 
-            isLoading={isDataLoading} 
+            isLoading={airQualityData.isLoading} 
             co2={airQualityData.co2}
             vocs={airQualityData.vocs}
             className="lg:col-span-2"
@@ -98,11 +97,11 @@ export default function DashboardPage() {
       </div>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
           <TemperatureAndHumidity
-            isLoading={isDataLoading}
+            isLoading={airQualityData.isLoading}
             temperature={airQualityData.temperature}
             humidity={airQualityData.humidity}
           />
-        <LivePulseChart />
+        <HistoricalSummary sensorId={sensorId} />
       </div>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-1 lg:gap-8">
         <HistoricalDataChart sensorId={sensorId} />

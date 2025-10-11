@@ -145,22 +145,15 @@ export default function HarmfulGases({
                   <Cloud className="h-6 w-6 text-primary" />
                 </div>
                 <div className="flex-1 space-y-1">
-                  {isLoading ? (
-                    <>
-                      <Skeleton className="h-6 w-16" />
-                      <Skeleton className="h-4 w-12" />
-                    </>
+                  <p className="text-xl font-bold">CO₂</p>
+                   {isLoading ? (
+                      <Skeleton className="h-5 w-12" />
                   ) : (
-                    <>
-                      <div className="flex items-baseline gap-2">
-                        <p className="text-xl font-bold">CO₂</p>
-                        <p className="text-lg font-semibold text-muted-foreground">
-                          {co2.value ?? '--'} <span className="text-sm">ppm</span>
-                        </p>
-                      </div>
-                      <Badge variant="outline">{co2Status}</Badge>
-                    </>
+                    <p className="text-lg font-semibold text-muted-foreground">
+                      {co2.value ?? '--'} <span className="text-sm">ppm</span>
+                    </p>
                   )}
+                  <Badge variant="outline">{co2Status}</Badge>
                 </div>
               </div>
               {isLoading ? (
@@ -210,22 +203,15 @@ export default function HarmfulGases({
                   <FlaskConical className="h-6 w-6 text-primary" />
                 </div>
                  <div className="flex-1 space-y-1">
+                  <p className="text-xl font-bold">VOCs</p>
                   {isLoading ? (
-                    <>
-                      <Skeleton className="h-6 w-16" />
-                      <Skeleton className="h-4 w-12" />
-                    </>
+                    <Skeleton className="h-5 w-12" />
                   ) : (
-                    <>
-                      <div className="flex items-baseline gap-2">
-                        <p className="text-xl font-bold">VOCs</p>
-                         <p className="text-lg font-semibold text-muted-foreground">
-                          {vocs.value ?? '--'} <span className="text-sm">ppb</span>
-                        </p>
-                      </div>
-                       <Badge variant="outline">{vocsStatus}</Badge>
-                    </>
+                    <p className="text-lg font-semibold text-muted-foreground">
+                      {vocs.value ?? '--'} <span className="text-sm">ppb</span>
+                    </p>
                   )}
+                  <Badge variant="outline">{vocsStatus}</Badge>
                 </div>
               </div>
               {isLoading ? (
@@ -273,22 +259,15 @@ export default function HarmfulGases({
                     <O2Icon />
                   </div>
                    <div className="flex-1 space-y-1">
+                    <p className="text-xl font-bold">O₂</p>
                     {isLoading ? (
-                      <>
-                        <Skeleton className="h-6 w-16" />
-                        <Skeleton className="h-4 w-12" />
-                      </>
+                        <Skeleton className="h-5 w-12" />
                     ) : (
-                      <>
-                        <div className="flex items-baseline gap-2">
-                          <p className="text-xl font-bold">O₂</p>
-                           <p className="text-lg font-semibold text-muted-foreground">
-                            20.9 <span className="text-sm">%</span>
-                          </p>
-                        </div>
-                        <Badge variant="outline">Normal</Badge>
-                      </>
+                        <p className="text-lg font-semibold text-muted-foreground">
+                        20.9 <span className="text-sm">%</span>
+                        </p>
                     )}
+                    <Badge variant="outline">Normal</Badge>
                   </div>
                 </div>
               </div>
