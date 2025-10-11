@@ -150,12 +150,7 @@ export default function HarmfulGases({
                     </>
                   ) : (
                     <>
-                      <p className="text-xl font-bold">
-                        CO₂: {co2.value}{' '}
-                        <span className="text-sm font-normal text-muted-foreground">
-                          ppm
-                        </span>
-                      </p>
+                      <p className="text-xl font-bold">CO₂</p>
                       <p className="text-sm text-muted-foreground">
                         {co2Status}
                       </p>
@@ -217,12 +212,7 @@ export default function HarmfulGases({
                     </>
                   ) : (
                     <>
-                      <p className="text-xl font-bold">
-                        VOCs: {vocs.value}{' '}
-                        <span className="text-sm font-normal text-muted-foreground">
-                          ppb
-                        </span>
-                      </p>
+                      <p className="text-xl font-bold">VOCs</p>
                       <p className="text-sm text-muted-foreground">
                         {vocsStatus}
                       </p>
@@ -282,7 +272,7 @@ export default function HarmfulGases({
                       </>
                     ) : (
                       <>
-                        <p className="text-xl font-bold">Oxygen: 20.9%</p>
+                        <p className="text-xl font-bold">O₂</p>
                         <p className="text-sm text-muted-foreground">Normal</p>
                       </>
                     )}
