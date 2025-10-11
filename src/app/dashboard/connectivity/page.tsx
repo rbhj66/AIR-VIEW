@@ -86,23 +86,36 @@ export default function ConnectivityPage() {
   
   const { data: readings, isLoading } = useCollection(readingsQuery);
   const latestReading = useMemo(() => (readings?.[0] as any) || null, [readings]);
-  const isDataLoading = isLoading || !latestReading;
+  const isDataLoading = isLoading;
 
   const airQualityData = useMemo(() => {
-    const pm25 = latestReading?.pm25 ?? null;
-    const temperature = latestReading?.temperature ?? null;
-    const humidity = latestReading?.humidity ?? null;
-    const aqi = pm25 !== null ? calculateAqi(pm25) : null;
-    const purifiedAqi = aqi !== null ? Math.round(aqi * 0.6) : null;
+    // If loading or no data, use mock data
+    if (isLoading || !latestReading) {
+        const mockPm25 = 15;
+        const mockAqi = calculateAqi(mockPm25);
+        return {
+            aqi: { value: mockAqi, status: getStatus(mockAqi, { good: 50, moderate: 100 })},
+            purifiedAqi: { value: Math.round(mockAqi * 0.6) },
+            pm25: { value: mockPm25 },
+            temperature: { value: 22.5 },
+            humidity: { value: 45.8 },
+        };
+    }
+    
+    const pm25 = latestReading?.pm25 ?? 0;
+    const temperature = latestReading?.temperature ?? 0;
+    const humidity = latestReading?.humidity ?? 0;
+    const aqi = calculateAqi(pm25);
+    const purifiedAqi = Math.round(aqi * 0.6);
 
     return {
-      aqi: { value: aqi, status: aqi !== null ? getStatus(aqi, { good: 50, moderate: 100 }) : 'Loading'},
+      aqi: { value: aqi, status: getStatus(aqi, { good: 50, moderate: 100 })},
       purifiedAqi: { value: purifiedAqi },
       pm25: { value: pm25 },
       temperature: { value: temperature },
       humidity: { value: humidity },
     };
-  }, [latestReading]);
+  }, [latestReading, isLoading]);
 
 
   return (
@@ -204,17 +217,17 @@ export default function ConnectivityPage() {
               </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center gap-6 text-center sm:flex-row sm:gap-12 sm:text-left">
-            {isDataLoading || airQualityData.aqi.value === null ? (
+            {airQualityData.aqi.value === null ? (
               <Skeleton className="h-48 w-48 rounded-full" />
             ) : (
               <AqiCircle value={airQualityData.aqi.value} />
             )}
             <div className="flex-1 space-y-2">
               <h3 className="text-2xl font-bold">
-                {isDataLoading ? <Skeleton className="h-8 w-48" /> : airQualityData.aqi.status}
+                {airQualityData.aqi.status === 'Loading' ? <Skeleton className="h-8 w-48" /> : airQualityData.aqi.status}
               </h3>
               <div className="text-muted-foreground">
-                {isDataLoading ? (
+                {airQualityData.aqi.status === 'Loading' ? (
                   <div className="space-y-2">
                     <Skeleton className="h-4 w-full" />
                     <Skeleton className="h-4 w-2/3" />
@@ -224,7 +237,7 @@ export default function ConnectivityPage() {
                 )}
               </div>
             </div>
-            {isDataLoading || airQualityData.purifiedAqi.value === null ? (
+            {airQualityData.purifiedAqi.value === null ? (
               <div className="flex flex-col items-center justify-center gap-2 rounded-lg p-4 text-center">
                  <Skeleton className="h-32 w-32 rounded-full" />
                  <div className='flex flex-col gap-1 items-center w-full'>
@@ -244,7 +257,7 @@ export default function ConnectivityPage() {
             pm25={airQualityData.pm25.value}
             temperature={airQualityData.temperature.value}
             humidity={airQualityData.humidity.value}
-            isLoading={isDataLoading}
+            isLoading={airQualityData.aqi.status === 'Loading'}
            />
         </div>
       </div>
