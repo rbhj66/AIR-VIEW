@@ -23,8 +23,18 @@ function LanguageSwitcher() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem>English</DropdownMenuItem>
-        <DropdownMenuItem>Español</DropdownMenuItem>
-        <DropdownMenuItem>Français</DropdownMenuItem>
+        <DropdownMenuItem>Español (Spanish)</DropdownMenuItem>
+        <DropdownMenuItem>Français (French)</DropdownMenuItem>
+        <DropdownMenuItem>Deutsch (German)</DropdownMenuItem>
+        <DropdownMenuItem>हिन्दी (Hindi)</DropdownMenuItem>
+        <DropdownMenuItem>ಕನ್ನಡ (Kannada)</DropdownMenuItem>
+        <DropdownMenuItem>मराठी (Marathi)</DropdownMenuItem>
+        <DropdownMenuItem>বাংলা (Bengali)</DropdownMenuItem>
+        <DropdownMenuItem>தமிழ் (Tamil)</DropdownMenuItem>
+        <DropdownMenuItem>తెలుగు (Telugu)</DropdownMenuItem>
+        <DropdownMenuItem>日本語 (Japanese)</DropdownMenuItem>
+        <DropdownMenuItem>中文 (Chinese)</DropdownMenuItem>
+        <DropdownMenuItem>العربية (Arabic)</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
