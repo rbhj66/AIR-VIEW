@@ -139,7 +139,7 @@
   }
 
   .animate-pulse-wave {
-      animation: pulse-wave 3s linear infinite;
+      animation: pulse-wave 1.5s linear infinite;
       transform: translateX(-25%);
       width: 200%;
   }

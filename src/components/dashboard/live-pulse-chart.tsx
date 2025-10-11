@@ -48,7 +48,7 @@ export default function LivePulseChart() {
               </linearGradient>
             </defs>
             <path
-              d="M0,80 Q100,20 200,80 T400,80 Q500,140 600,80 T800,80"
+              d="M0,100 Q100,10 200,100 T400,100 Q500,180 600,100 T800,100"
               stroke="hsl(var(--primary))"
               fill="url(#pulseGradient)"
               strokeWidth="3"
