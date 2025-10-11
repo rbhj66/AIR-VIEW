@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -271,11 +272,7 @@ export default function HarmfulGases({
                   </div>
                 </div>
               </div>
-                {isLoading ? (
-                    <Skeleton className="h-10 w-full" />
-                ) : (
-                    <div className="h-10 w-full" /> 
-                )}
+                <div className="h-10 w-full" /> 
             </div>
           </DialogTrigger>
           <DialogContent>
