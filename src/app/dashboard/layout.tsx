@@ -61,7 +61,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <Button variant="ghost" className="w-full justify-start gap-2" asChild>
-                  <Link href="#">
+                  <Link href="/dashboard/analytics">
                     <AreaChart />
                     Analytics
                   </Link>
@@ -69,7 +69,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <Button variant="ghost" className="w-full justify-start gap-2" asChild>
-                  <Link href="#">
+                  <Link href="/dashboard/settings">
                     <Settings />
                     Settings
                   </Link>
