@@ -1,16 +1,15 @@
 'use client';
 import PollutantDistributionChart from '@/components/dashboard/analytics/pollutant-distribution-chart';
 import HourlyAqiTrends from '@/components/dashboard/analytics/hourly-aqi-trends';
-import DeviceCorrelationChart from '@/components/dashboard/analytics/device-correlation-chart';
 import { useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, Timestamp, where } from 'firebase/firestore';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import PredictionCard from '@/components/dashboard/prediction-card';
+import PollutantCorrelationScatterChart from '@/components/dashboard/analytics/pollutant-correlation-scatter-chart';
 
 export default function AnalyticsPage() {
   const firestore = useFirestore();
   const sensorId = 'living_room_sensor';
-  const deviceId = 'living_room_purifier';
 
   const readingsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -41,9 +40,9 @@ export default function AnalyticsPage() {
         <PredictionCard />
       </div>
        <div className="grid grid-cols-1 gap-4 lg:gap-8">
-          <DeviceCorrelationChart 
-            sensorId={sensorId}
-            deviceId={deviceId}
+          <PollutantCorrelationScatterChart 
+            sensorReadings={sensorReadings}
+            isLoading={isLoadingReadings}
           />
        </div>
     </main>
