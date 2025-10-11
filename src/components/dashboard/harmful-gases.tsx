@@ -9,11 +9,15 @@ import {
 } from '@/components/ui/card';
 import { FlaskConical, Cloud } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '../ui/chart';
+import { Area, AreaChart } from 'recharts';
+import { ChartDataPoint } from '@/lib/types';
+import { useMemo } from 'react';
 
 interface HarmfulGasesProps {
   isLoading: boolean;
-  co2: number | null;
-  vocs: number | null;
+  co2: { value: number | null; history: ChartDataPoint[] };
+  vocs: { value: number | null; history: ChartDataPoint[] };
 }
 
 const getStatus = (
@@ -50,13 +54,43 @@ const O2Icon = () => (
     </svg>
   );
 
+const MiniChart = ({ data }: { data: ChartDataPoint[] }) => {
+    const chartData = useMemo(() => {
+        if (data.length === 0) {
+            // Provide some dummy data for skeleton
+            return Array.from({ length: 10 }, (_, i) => ({ time: i.toString(), value: 0 }));
+        }
+        return data;
+    }, [data]);
+
+    return (
+        <ChartContainer config={{}} className="h-10 w-full">
+            <AreaChart accessibilityLayer data={chartData}>
+                 <defs>
+                    <linearGradient id="mini-chart-fill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--color-chart-1)" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="var(--color-chart-1)" stopOpacity={0.1} />
+                    </linearGradient>
+                </defs>
+                <Area 
+                    dataKey="value" 
+                    type="natural" 
+                    fill="url(#mini-chart-fill)" 
+                    stroke="var(--color-chart-1)" 
+                    strokeWidth={2}
+                />
+            </AreaChart>
+        </ChartContainer>
+    );
+}
+
 export default function HarmfulGases({
   isLoading,
   co2,
   vocs,
 }: HarmfulGasesProps) {
-  const co2Status = getStatus(co2, { good: 1000, moderate: 2000 });
-  const vocsStatus = getStatus(vocs, { good: 300, moderate: 500 });
+  const co2Status = getStatus(co2.value, { good: 1000, moderate: 2000 });
+  const vocsStatus = getStatus(vocs.value, { good: 300, moderate: 500 });
   return (
     <Card>
       <CardHeader>
@@ -66,62 +100,72 @@ export default function HarmfulGases({
         </CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="flex items-start gap-4 rounded-lg bg-muted/30 p-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <Cloud className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">CO₂</p>
-            {isLoading ? (
-              <>
-                <Skeleton className="mt-1 h-7 w-20" />
-                <Skeleton className="mt-1 h-4 w-12" />
-              </>
-            ) : (
-              <>
-                <p className="text-2xl font-bold">{co2} ppm</p>
-                <p className="text-sm text-muted-foreground">{co2Status}</p>
-              </>
-            )}
-          </div>
+        <div className="flex flex-col justify-between gap-4 rounded-lg bg-muted/30 p-4">
+            <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                    <Cloud className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                    <p className="text-sm font-medium text-muted-foreground">CO₂</p>
+                    {isLoading ? (
+                    <>
+                        <Skeleton className="mt-1 h-7 w-20" />
+                        <Skeleton className="mt-1 h-4 w-12" />
+                    </>
+                    ) : (
+                    <>
+                        <p className="text-2xl font-bold">{co2.value} ppm</p>
+                        <p className="text-sm text-muted-foreground">{co2Status}</p>
+                    </>
+                    )}
+                </div>
+            </div>
+            {isLoading ? <Skeleton className="h-10 w-full" /> : <MiniChart data={co2.history} />}
         </div>
-        <div className="flex items-start gap-4 rounded-lg bg-muted/30 p-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <FlaskConical className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">VOCs</p>
-            {isLoading ? (
-              <>
-                <Skeleton className="mt-1 h-7 w-20" />
-                <Skeleton className="mt-1 h-4 w-12" />
-              </>
-            ) : (
-              <>
-                <p className="text-2xl font-bold">{vocs} ppb</p>
-                <p className="text-sm text-muted-foreground">{vocsStatus}</p>
-              </>
-            )}
-          </div>
+        <div className="flex flex-col justify-between gap-4 rounded-lg bg-muted/30 p-4">
+           <div className="flex items-start gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                    <FlaskConical className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                    <p className="text-sm font-medium text-muted-foreground">VOCs</p>
+                    {isLoading ? (
+                    <>
+                        <Skeleton className="mt-1 h-7 w-20" />
+                        <Skeleton className="mt-1 h-4 w-12" />
+                    </>
+                    ) : (
+                    <>
+                        <p className="text-2xl font-bold">{vocs.value} ppb</p>
+                        <p className="text-sm text-muted-foreground">{vocsStatus}</p>
+                    </>
+                    )}
+                </div>
+           </div>
+           {isLoading ? <Skeleton className="h-10 w-full" /> : <MiniChart data={vocs.history} />}
         </div>
-        <div className="flex items-start gap-4 rounded-lg bg-muted/30 p-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <O2Icon />
+        <div className="flex flex-col justify-between gap-4 rounded-lg bg-muted/30 p-4">
+          <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                <O2Icon />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Oxygen</p>
+                {isLoading ? (
+                  <>
+                    <Skeleton className="mt-1 h-7 w-20" />
+                    <Skeleton className="mt-1 h-4 w-12" />
+                  </>
+                ) : (
+                  <>
+                    <p className="text-2xl font-bold">20.9%</p>
+                    <p className="text-sm text-muted-foreground">Normal</p>
+                  </>
+                )}
+              </div>
           </div>
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">Oxygen</p>
-            {isLoading ? (
-              <>
-                <Skeleton className="mt-1 h-7 w-20" />
-                <Skeleton className="mt-1 h-4 w-12" />
-              </>
-            ) : (
-              <>
-                <p className="text-2xl font-bold">20.9%</p>
-                <p className="text-sm text-muted-foreground">Normal</p>
-              </>
-            )}
-          </div>
+          {/* Oxygen history is constant, so we don't need a real chart, but a skeleton for loading looks good */}
+          {isLoading && <Skeleton className="h-10 w-full" />}
         </div>
       </CardContent>
     </Card>
