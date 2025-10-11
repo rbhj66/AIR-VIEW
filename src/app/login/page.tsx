@@ -50,7 +50,11 @@ export default function LoginPage() {
       await signInWithEmailAndPassword(auth, data.email, data.password);
       router.push('/dashboard');
     } catch (error: any) {
-      setFirebaseError(error.message);
+      if (error.code === 'auth/invalid-credential') {
+        setFirebaseError('Invalid email or password. Please try again.');
+      } else {
+        setFirebaseError(error.message);
+      }
     }
   };
 
