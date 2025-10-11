@@ -104,8 +104,9 @@ export default function PollutantDistributionChart({ sensorReadings, isLoading }
             </PieChart>
           </ChartContainer>
         ) : (
-             <div className="flex h-[300px] w-full items-center justify-center text-muted-foreground">
-                No data available for chart.
+             <div className="flex h-[300px] w-full flex-col items-center justify-center gap-2 text-center text-muted-foreground">
+                <p>No data from sensor yet.</p>
+                <p className="text-xs">Make sure the Wokwi simulation is running on the Connectivity page.</p>
              </div>
         )}
       </CardContent>

@@ -98,7 +98,7 @@ export default function HistoricalDataChart({ className, sensorId }: { className
       </CardHeader>
       <CardContent>
         {isLoading && <div className="h-64 w-full flex items-center justify-center"><Skeleton className="h-full w-full" /></div>}
-        {!isLoading && formattedData.length === 0 && <div className="h-64 w-full flex items-center justify-center"><p className='text-muted-foreground'>No data from sensor yet. Make sure the Wokwi simulation is running.</p></div>}
+        {!isLoading && formattedData.length === 0 && <div className="h-64 w-full flex flex-col items-center justify-center gap-2 text-center"><p className='text-muted-foreground'>No data from sensor yet.</p><p className="text-xs text-muted-foreground">Make sure the Wokwi simulation is running on the Connectivity page.</p></div>}
         {!isLoading && formattedData.length > 0 && <ChartContainer config={chartConfig} className="h-64 w-full">
           <AreaChart
             accessibilityLayer
