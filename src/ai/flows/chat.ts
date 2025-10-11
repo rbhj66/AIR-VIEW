@@ -2,9 +2,10 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { Message, Part } from 'genkit';
 
 const MessageSchema = z.object({
-  role: z.enum(['user', 'model']),
+  role: z.enum(['user', 'model', 'system']),
   content: z.string(),
 });
 
@@ -15,14 +16,20 @@ const ChatInputSchema = z.object({
 
 export type ChatInput = z.infer<typeof ChatInputSchema>;
 
+function toGenkitMessage(message: z.infer<typeof MessageSchema>): Message {
+  return new Message(message.role, [Part.text(message.content)]);
+}
+
 export async function chat(input: ChatInput): Promise<string> {
   const { history, message } = input;
 
-  const chat = ai.getModel('googleai/gemini-2.5-flash').chat();
+  const chat = ai.chat();
+
+  const genkitHistory = history.map(toGenkitMessage);
 
   const { text } = await chat.send({
-    history,
-    messages: [{ role: 'user', content: message }],
+    history: genkitHistory,
+    message: message,
   });
 
   return text;
