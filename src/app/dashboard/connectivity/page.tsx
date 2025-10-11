@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, limit } from 'firebase/firestore';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import AqiCircle from '@/components/dashboard/aqi-circle';
 import { Skeleton } from '@/components/ui/skeleton';
 import PurifiedAqiIndicator from '@/components/dashboard/purified-aqi-indicator';
@@ -74,6 +74,7 @@ const getStatus = (
 export default function ConnectivityPage() {
   const firestore = useFirestore();
   const sensorId = 'living_room_sensor';
+  const [mockTick, setMockTick] = useState(0);
 
   const readingsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -86,36 +87,52 @@ export default function ConnectivityPage() {
   
   const { data: readings, isLoading } = useCollection(readingsQuery);
   const latestReading = useMemo(() => (readings?.[0] as any) || null, [readings]);
-  const isDataLoading = isLoading;
+  const isDataAvailable = !isLoading && latestReading;
+  
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (!isDataAvailable) {
+       interval = setInterval(() => {
+        setMockTick(tick => tick + 1);
+      }, 2000);
+    }
+    return () => clearInterval(interval);
+  }, [isDataAvailable]);
+
 
   const airQualityData = useMemo(() => {
-    // If loading or no data, use mock data
-    if (isLoading || !latestReading) {
-        const mockPm25 = 15;
-        const mockAqi = calculateAqi(mockPm25);
-        return {
-            aqi: { value: mockAqi, status: getStatus(mockAqi, { good: 50, moderate: 100 })},
-            purifiedAqi: { value: Math.round(mockAqi * 0.6) },
-            pm25: { value: mockPm25 },
-            temperature: { value: 22.5 },
-            humidity: { value: 45.8 },
-        };
-    }
-    
-    const pm25 = latestReading?.pm25 ?? 0;
-    const temperature = latestReading?.temperature ?? 0;
-    const humidity = latestReading?.humidity ?? 0;
-    const aqi = calculateAqi(pm25);
-    const purifiedAqi = Math.round(aqi * 0.6);
+    // If we have live data, use it
+    if (isDataAvailable) {
+      const pm25 = latestReading?.pm25 ?? 0;
+      const temperature = latestReading?.temperature ?? 0;
+      const humidity = latestReading?.humidity ?? 0;
+      const aqi = calculateAqi(pm25);
+      const purifiedAqi = Math.round(aqi * 0.6);
 
+      return {
+        aqi: { value: aqi, status: getStatus(aqi, { good: 50, moderate: 100 }) },
+        purifiedAqi: { value: purifiedAqi },
+        pm25: { value: pm25 },
+        temperature: { value: temperature },
+        humidity: { value: humidity },
+        isLoading: false,
+      };
+    }
+
+    // Otherwise, generate changing mock data
+    const basePm25 = 10 + (Math.sin(mockTick * 0.5) * 5); // Fluctuates between 5 and 15
+    const mockPm25 = parseFloat(basePm25.toFixed(1));
+    const mockAqi = calculateAqi(mockPm25);
+    
     return {
-      aqi: { value: aqi, status: getStatus(aqi, { good: 50, moderate: 100 })},
-      purifiedAqi: { value: purifiedAqi },
-      pm25: { value: pm25 },
-      temperature: { value: temperature },
-      humidity: { value: humidity },
+        aqi: { value: mockAqi, status: getStatus(mockAqi, { good: 50, moderate: 100 })},
+        purifiedAqi: { value: Math.round(mockAqi * 0.6) },
+        pm25: { value: mockPm25 },
+        temperature: { value: parseFloat((21 + Math.sin(mockTick * 0.2)).toFixed(1)) },
+        humidity: { value: parseFloat((45 + Math.cos(mockTick * 0.3) * 5).toFixed(1)) },
+        isLoading: true, // Treat as loading to show skeletons initially
     };
-  }, [latestReading, isLoading]);
+  }, [latestReading, isDataAvailable, mockTick]);
 
 
   return (
@@ -217,27 +234,27 @@ export default function ConnectivityPage() {
               </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center gap-6 text-center sm:flex-row sm:gap-12 sm:text-left">
-            {airQualityData.aqi.value === null ? (
+            {!airQualityData.aqi.value ? (
               <Skeleton className="h-48 w-48 rounded-full" />
             ) : (
               <AqiCircle value={airQualityData.aqi.value} />
             )}
             <div className="flex-1 space-y-2">
               <h3 className="text-2xl font-bold">
-                {airQualityData.aqi.status === 'Loading' ? <Skeleton className="h-8 w-48" /> : airQualityData.aqi.status}
+                {airQualityData.isLoading ? <Skeleton className="h-8 w-48" /> : airQualityData.aqi.status}
               </h3>
               <div className="text-muted-foreground">
-                {airQualityData.aqi.status === 'Loading' ? (
+                {airQualityData.isLoading ? (
                   <div className="space-y-2">
+                    <p>Waiting for live sensor data...</p>
                     <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-2/3" />
                   </div>
                 ) : (
-                   `Live AQI is ${airQualityData.aqi.value}. The air quality is currently considered ${airQualityData.aqi.status.toLowerCase()}.`
+                   `Live AQI is ${airQualityData.aqi.value}. The air quality is currently considered ${airQualityData.aqi.status?.toLowerCase()}.`
                 )}
               </div>
             </div>
-            {airQualityData.purifiedAqi.value === null ? (
+            {!airQualityData.purifiedAqi.value ? (
               <div className="flex flex-col items-center justify-center gap-2 rounded-lg p-4 text-center">
                  <Skeleton className="h-32 w-32 rounded-full" />
                  <div className='flex flex-col gap-1 items-center w-full'>
@@ -257,7 +274,7 @@ export default function ConnectivityPage() {
             pm25={airQualityData.pm25.value}
             temperature={airQualityData.temperature.value}
             humidity={airQualityData.humidity.value}
-            isLoading={airQualityData.aqi.status === 'Loading'}
+            isLoading={airQualityData.isLoading && !isDataAvailable}
            />
         </div>
       </div>
