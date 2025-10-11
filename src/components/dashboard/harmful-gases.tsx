@@ -115,24 +115,8 @@ export default function HarmfulGases({ isLoading, co2Data, vocsData }: HarmfulGa
         </CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <GasIndicator
-          name="Carbon Dioxide"
-          formula="CO2"
-          data={co2Data}
-          unit="ppm"
-          threshold={CO2_POOR_THRESHOLD}
-          isLoading={isLoading}
-          chartColor='hsl(var(--chart-3))'
-        />
-        <GasIndicator
-          name="Volatile Organic Compounds"
-          formula="VOCs"
-          data={vocsData}
-          unit="ppb"
-          threshold={VOCS_POOR_THRESHOLD}
-          isLoading={isLoading}
-          chartColor='hsl(var(--chart-4))'
-        />
+        <StaticGasIndicator name="Carbon Dioxide" formula="CO2" />
+        <StaticGasIndicator name="Volatile Organic Compounds" formula="VOCs" />
         <StaticGasIndicator name="Particulate Matter 2.5" formula="PM2.5" />
         <StaticGasIndicator name="Particulate Matter 10" formula="PM10" />
         <StaticGasIndicator name="Ozone" formula="O3" />
