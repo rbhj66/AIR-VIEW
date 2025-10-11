@@ -4,7 +4,7 @@ import DeviceControlCard from '@/components/dashboard/device-control-card';
 import HistoricalDataChart from '@/components/dashboard/historical-data-chart';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FlaskConical, Wind, Beaker, ArrowRight } from 'lucide-react';
+import { FlaskConical, Wind, Beaker, ArrowRight, Thermometer, Droplets } from 'lucide-react';
 import AqiCircle from '@/components/dashboard/aqi-circle';
 import PredictionCard from '@/components/dashboard/prediction-card';
 import RecommendationsCard from '@/components/dashboard/recommendations-card';
@@ -112,6 +112,8 @@ export default function DashboardPage() {
       pm10: [],
       co2: [],
       vocs: [],
+      temperature: [],
+      humidity: [],
     };
     
     reversedReadings.forEach((reading: any) => {
@@ -120,6 +122,8 @@ export default function DashboardPage() {
       data.pm10.push({ time, value: reading.pm10 });
       data.co2.push({ time, value: reading.co2 });
       data.vocs.push({ time, value: reading.vocs });
+      data.temperature.push({ time, value: reading.temperature });
+      data.humidity.push({ time, value: reading.humidity });
     });
     return data;
   }, [readings]);
@@ -135,6 +139,8 @@ export default function DashboardPage() {
         pm10: { value: 0, unit: 'µg/m³' },
         co2: { value: 0, unit: 'ppm' },
         voc: { value: 0, unit: 'ppb' },
+        temperature: { value: 0, unit: '°C' },
+        humidity: { value: 0, unit: '%' },
       };
     }
     const aqi = calculateAqi(latestReading.pm25);
@@ -149,12 +155,14 @@ export default function DashboardPage() {
       pm10: { value: latestReading.pm10, unit: 'µg/m³' },
       co2: { value: latestReading.co2, unit: 'ppm' },
       voc: { value: latestReading.vocs, unit: 'ppb' },
+      temperature: { value: latestReading.temperature, unit: '°C' },
+      humidity: { value: latestReading.humidity, unit: '%' },
     };
   }, [latestReading, isLoading]);
   
   const statusInfo = getStatusInfo(airQualityData.aqi);
 
-  const getPollutantStatus = (pollutant: 'pm25' | 'pm10' | 'co2' | 'vocs', value: number) => {
+  const getPollutantStatus = (pollutant: 'pm25' | 'pm10' | 'co2' | 'vocs' | 'temperature' | 'humidity', value: number) => {
     // Simplified status logic for individual pollutants
     if (pollutant === 'pm25') {
       if (value <= 12) return 'Good';
@@ -175,6 +183,15 @@ export default function DashboardPage() {
       if (value <= 250) return 'Excellent';
       if (value <= 500) return 'Good';
       return 'Poor';
+    }
+    if (pollutant === 'temperature') {
+      if (value >= 18 && value <= 24) return 'Comfortable';
+      return 'Needs Adjustment';
+    }
+    if (pollutant === 'humidity') {
+      if (value >= 40 && value <= 60) return 'Ideal';
+      if (value < 40) return 'Low';
+      return 'High';
     }
     return 'Good';
   };
@@ -208,9 +225,11 @@ export default function DashboardPage() {
           <DeviceControlCard className="h-full" />
       </div>
         
-       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 lg:gap-8">
           {isLoading ? (
             <>
+              <Skeleton className="h-52 w-full" />
+              <Skeleton className="h-52 w-full" />
               <Skeleton className="h-52 w-full" />
               <Skeleton className="h-52 w-full" />
               <Skeleton className="h-52 w-full" />
@@ -249,6 +268,22 @@ export default function DashboardPage() {
                 icon={<FlaskConical />}
                 status={getPollutantStatus('vocs', airQualityData.voc.value)}
                 chartData={historicalChartData.vocs || []}
+              />
+              <AirQualityCard
+                title="Temperature"
+                value={airQualityData.temperature.value}
+                unit={airQualityData.temperature.unit}
+                icon={<Thermometer />}
+                status={getPollutantStatus('temperature', airQualityData.temperature.value)}
+                chartData={historicalChartData.temperature || []}
+              />
+               <AirQualityCard
+                title="Humidity"
+                value={airQualityData.humidity.value}
+                unit={airQualityData.humidity.unit}
+                icon={<Droplets />}
+                status={getPollutantStatus('humidity', airQualityData.humidity.value)}
+                chartData={historicalChartData.humidity || []}
               />
             </>
           )}
