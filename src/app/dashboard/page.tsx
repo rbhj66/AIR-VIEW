@@ -105,7 +105,16 @@ export default function DashboardPage() {
   }, [deviceState?.isPoweredOn]);
   
   const historicalChartData = useMemo(() => {
-    if (!readings) return {};
+    if (!readings) {
+      return {
+        pm25: [],
+        pm10: [],
+        co2: [],
+        vocs: [],
+        temperature: [],
+        humidity: [],
+      };
+    }
     const reversedReadings = [...readings].reverse(); // oldest first
     const data: { [key: string]: ChartDataPoint[] } = {
       pm25: [],
@@ -227,67 +236,56 @@ export default function DashboardPage() {
       </div>
         
        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 lg:gap-8">
-          {isLoading ? (
-            <>
-              <Skeleton className="h-52 w-full" />
-              <Skeleton className="h-52 w-full" />
-              <Skeleton className="h-52 w-full" />
-              <Skeleton className="h-52 w-full" />
-              <Skeleton className="h-52 w-full" />
-              <Skeleton className="h-52 w-full" />
-            </>
-          ) : (
-            <>
-              <AirQualityCard
-                title="PM2.5"
-                value={airQualityData.pm25.value}
-                unit={airQualityData.pm25.unit}
-                icon={<Wind />}
-                status={getPollutantStatus('pm25', airQualityData.pm25.value)}
-                chartData={historicalChartData.pm25 || []}
-              />
-              <AirQualityCard
-                title="PM10"
-                value={airQualityData.pm10.value}
-                unit={airQualityData.pm10.unit}
-                icon={<Wind />}
-                status={getPollutantStatus('pm10', airQualityData.pm10.value)}
-                chartData={historicalChartData.pm10 || []}
-              />
-              <AirQualityCard
-                title="CO2"
-                value={airQualityData.co2.value}
-                unit={airQualityData.co2.unit}
-                icon={<Beaker />}
-                status={getPollutantStatus('co2', airQualityData.co2.value)}
-                chartData={historicalChartData.co2 || []}
-              />
-              <AirQualityCard
-                title="VOCs"
-                value={airQualityData.voc.value}
-                unit={airQualityData.voc.unit}
-                icon={<FlaskConical />}
-                status={getPollutantStatus('vocs', airQualityData.voc.value)}
-                chartData={historicalChartData.vocs || []}
-              />
-              <AirQualityCard
-                title="Temperature"
-                value={airQualityData.temperature.value}
-                unit={airQualityData.temperature.unit}
-                icon={<Thermometer />}
-                status={getPollutantStatus('temperature', airQualityData.temperature.value)}
-                chartData={historicalChartData.temperature || []}
-              />
-               <AirQualityCard
-                title="Humidity"
-                value={airQualityData.humidity.value}
-                unit={airQualityData.humidity.unit}
-                icon={<Droplets />}
-                status={getPollutantStatus('humidity', airQualityData.humidity.value)}
-                chartData={historicalChartData.humidity || []}
-              />
-            </>
-          )}
+          <>
+            <AirQualityCard
+              title="PM2.5"
+              value={airQualityData.pm25.value}
+              unit={airQualityData.pm25.unit}
+              icon={<Wind />}
+              status={getPollutantStatus('pm25', airQualityData.pm25.value)}
+              chartData={historicalChartData.pm25 || []}
+            />
+            <AirQualityCard
+              title="PM10"
+              value={airQualityData.pm10.value}
+              unit={airQualityData.pm10.unit}
+              icon={<Wind />}
+              status={getPollutantStatus('pm10', airQualityData.pm10.value)}
+              chartData={historicalChartData.pm10 || []}
+            />
+            <AirQualityCard
+              title="CO2"
+              value={airQualityData.co2.value}
+              unit={airQualityData.co2.unit}
+              icon={<Beaker />}
+              status={getPollutantStatus('co2', airQualityData.co2.value)}
+              chartData={historicalChartData.co2 || []}
+            />
+            <AirQualityCard
+              title="VOCs"
+              value={airQualityData.voc.value}
+              unit={airQualityData.voc.unit}
+              icon={<FlaskConical />}
+              status={getPollutantStatus('vocs', airQualityData.voc.value)}
+              chartData={historicalChartData.vocs || []}
+            />
+            <AirQualityCard
+              title="Temperature"
+              value={airQualityData.temperature.value}
+              unit={airQualityData.temperature.unit}
+              icon={<Thermometer />}
+              status={getPollutantStatus('temperature', airQualityData.temperature.value)}
+              chartData={historicalChartData.temperature || []}
+            />
+             <AirQualityCard
+              title="Humidity"
+              value={airQualityData.humidity.value}
+              unit={airQualityData.humidity.unit}
+              icon={<Droplets />}
+              status={getPollutantStatus('humidity', airQualityData.humidity.value)}
+              chartData={historicalChartData.humidity || []}
+            />
+          </>
         </div>
         
       <div className="grid grid-cols-1 gap-4 lg:gap-8">
