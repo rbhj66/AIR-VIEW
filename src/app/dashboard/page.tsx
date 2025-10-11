@@ -9,7 +9,6 @@ import {
 } from 'firebase/firestore';
 import { useMemo, useState, useEffect } from 'react';
 import HarmfulGases from '@/components/dashboard/harmful-gases';
-import LivePulseChart from '@/components/dashboard/live-pulse-chart';
 import HistoricalDataChart from '@/components/dashboard/historical-data-chart';
 import LiveAqiCard from '@/components/dashboard/live-aqi-card';
 import TemperatureAndHumidity from '@/components/dashboard/temperature-and-humidity';
