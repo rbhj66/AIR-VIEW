@@ -12,7 +12,7 @@ import { AlertTriangle, Bell, Zap } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import AqiCircle from './aqi-circle';
 import { useToast } from '@/hooks/use-toast';
-import { useRef, useMemo } from 'react';
+import { useMemo } from 'react';
 import AirQualityAlert from './air-quality-alert';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
@@ -44,7 +44,6 @@ interface LiveAqiCardProps {
 
 export default function LiveAqiCard({ isLoading, pm25 }: LiveAqiCardProps) {
   const { toast } = useToast();
-  const audioRef = useRef<HTMLAudioElement>(null);
   const aqi = useMemo(() => calculateAqi(pm25), [pm25]);
   const status = useMemo(() => getStatus(aqi), [aqi]);
   const { user } = useUser();
@@ -59,10 +58,6 @@ export default function LiveAqiCard({ isLoading, pm25 }: LiveAqiCardProps) {
 
   const handleManualAlert = () => {
     const phoneNumber = (userProfile as any)?.phoneNumber;
-
-    audioRef.current?.play().catch((error) => {
-      console.warn('Buzzer sound autoplay was blocked by the browser.', error);
-    });
 
     toast({
       variant: 'destructive',
