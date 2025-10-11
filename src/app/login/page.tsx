@@ -92,7 +92,9 @@ export default function LoginPage() {
                 {...register('email')}
               />
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
               )}
             </div>
             <div className="grid gap-2">
@@ -122,13 +124,20 @@ export default function LoginPage() {
             </Button>
           </CardContent>
         </form>
-        <CardFooter className="text-sm">
-          Don&apos;t have an account?{' '}
-          <Button variant="link" asChild>
-            <Link href="/signup">Sign up</Link>
-          </Button>
+        <CardFooter className="flex-col items-center gap-2 text-sm">
+          <p className="text-center text-muted-foreground">
+            Sign up to receive real-time SMS notifications on your phone!
+          </p>
+          <div className="flex">
+            Don&apos;t have an account?{' '}
+            <Button variant="link" asChild>
+              <Link href="/signup">Sign up</Link>
+            </Button>
+          </div>
         </CardFooter>
       </Card>
     </div>
   );
 }
+
+    

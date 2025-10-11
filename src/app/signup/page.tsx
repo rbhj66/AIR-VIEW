@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createUserWithEmailAndPassword,
@@ -24,10 +24,15 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { createUserProfile } from '@/lib/create-user-profile';
 
 const signupSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6, 'Password must be at least 6 characters'),
+  phoneNumber: z
+    .string()
+    .min(10, 'Please enter a valid phone number')
+    .optional(),
 });
 
 type SignupSchema = z.infer<typeof signupSchema>;
@@ -35,6 +40,7 @@ type SignupSchema = z.infer<typeof signupSchema>;
 export default function SignupPage() {
   const router = useRouter();
   const auth = useAuth();
+  const firestore = useFirestore();
   const [firebaseError, setFirebaseError] = useState<string | null>(null);
 
   const {
@@ -48,7 +54,19 @@ export default function SignupPage() {
   const onSubmit = async (data: SignupSchema) => {
     setFirebaseError(null);
     try {
-      await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+      // After user is created in Auth, create their profile in Firestore
+      if (userCredential.user && firestore) {
+        await createUserProfile(firestore, userCredential.user.uid, {
+          email: userCredential.user.email || '',
+          phoneNumber: data.phoneNumber || '',
+          createdAt: new Date().toISOString(),
+        });
+      }
       router.push('/dashboard');
     } catch (error: any) {
       setFirebaseError(error.message);
@@ -59,7 +77,20 @@ export default function SignupPage() {
     setFirebaseError(null);
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      // For Google Sign-in, we might not get a phone number upfront.
+      // We still create a profile. The user can add their number later in settings.
+      if (result.user && firestore) {
+        await createUserProfile(
+          firestore,
+          result.user.uid,
+          {
+            email: result.user.email || '',
+            createdAt: new Date().toISOString(),
+          },
+          true // merge true to not overwrite data if they sign in again
+        );
+      }
       router.push('/dashboard');
     } catch (error: any) {
       setFirebaseError(error.message);
@@ -89,7 +120,9 @@ export default function SignupPage() {
                 {...register('email')}
               />
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
               )}
             </div>
             <div className="grid gap-2">
@@ -101,11 +134,27 @@ export default function SignupPage() {
                 </p>
               )}
             </div>
+            <div className="grid gap-2">
+              <Label htmlFor="phoneNumber">Phone Number (for alerts)</Label>
+              <Input
+                id="phoneNumber"
+                type="tel"
+                placeholder="+1 555-555-5555"
+                {...register('phoneNumber')}
+              />
+              {errors.phoneNumber && (
+                <p className="text-sm text-destructive">
+                  {errors.phoneNumber.message}
+                </p>
+              )}
+            </div>
             {firebaseError && (
               <p className="text-sm text-destructive">{firebaseError}</p>
             )}
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Create account
             </Button>
             <Button
@@ -129,3 +178,5 @@ export default function SignupPage() {
     </div>
   );
 }
+
+    

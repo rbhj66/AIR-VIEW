@@ -27,6 +27,10 @@
           "type": "string",
           "description": "The last name of the user."
         },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The user's phone number for SMS notifications."
+        },
         "createdAt": {
           "type": "string",
           "description": "Timestamp indicating when the user account was created.",
@@ -35,10 +39,7 @@
       },
       "required": [
         "id",
-        "username",
         "email",
-        "firstName",
-        "lastName",
         "createdAt"
       ]
     },
@@ -370,3 +371,5 @@
     "reasoning": "The Firestore structure is designed to ensure security, scalability, and debuggability, adhering to the core design principles and strategy mandates. Authorization Independence is achieved through path-based ownership for user-specific data and the avoidance of `get()` calls in security rules. Data is segregated into collections with homogeneous security postures. Access modeling uses path-based ownership where applicable.\n\nSpecifically:\n\n*   **Users:** User data is stored in `/users/{userId}`. This provides a natural path-based ownership model.\n*   **Sensors:** Sensor data is stored in `/sensors/{sensorId}`.  Access to sensors might need to be controlled, potentially through a membership map on each sensor if collaborative access is required.\n*   **AirQualityReadings:** Air quality readings are stored as a subcollection of sensors at `/sensors/{sensorId}/readings/{readingId}`.\n*   **AirPurifierDevices:** Air purifier device data is stored in `/air_purifier_devices/{deviceId}`.  If device access needs to be shared, a membership map should be included in the device documents.\n*   **AirPurifierSettings:** User-specific air purifier settings are stored under the user's document: `/users/{userId}/air_purifier_settings/{settingId}`.\n*   **AirQualityPredictions:** Air quality predictions are stored as a subcollection of sensors at `/sensors/{sensorId}/predictions/{predictionId}`.\n\nThis structure allows for secure `list` operations because each collection has a well-defined access control model, fulfilling the QAPs requirement.  The structure supports the integrity of ownership, timestamps, and potentially denormalized data (like sensor membership) where needed. For example, you can easily secure a rule like `match /users/{userId}/air_purifier_settings/{settingId} { allow read, write: if request.auth.uid == userId; }`"
   }
 }
+
+    

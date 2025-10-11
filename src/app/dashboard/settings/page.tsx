@@ -1,6 +1,13 @@
 'use client';
-import { useUser, useAuth } from '@/firebase';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { useUser, useAuth, useFirestore, useMemoFirebase } from '@/firebase';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,6 +20,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import packageJson from '../../../../package.json';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { doc } from 'firebase/firestore';
 
 const profileSchema = z.object({
   displayName: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -23,8 +32,16 @@ type ProfileSchema = z.infer<typeof profileSchema>;
 export default function SettingsPage() {
   const { user } = useUser();
   const auth = useAuth();
+  const firestore = useFirestore();
   const { toast } = useToast();
   const [areNotificationsEnabled, setAreNotificationsEnabled] = useState(true);
+
+  const userProfileRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [user, firestore]);
+
+  const { data: userProfile } = useDoc(userProfileRef);
 
   const {
     register,
@@ -72,15 +89,17 @@ export default function SettingsPage() {
       });
     }
   };
-  
+
   const handleNotificationChange = (enabled: boolean) => {
     setAreNotificationsEnabled(enabled);
     localStorage.setItem('notificationsEnabled', JSON.stringify(enabled));
     toast({
-        title: `Notifications ${enabled ? 'Enabled' : 'Disabled'}`,
-        description: `You will ${enabled ? '' : 'no longer '}receive air quality alerts.`,
+      title: `Notifications ${enabled ? 'Enabled' : 'Disabled'}`,
+      description: `You will ${
+        enabled ? '' : 'no longer '
+      }receive air quality alerts.`,
     });
-  }
+  };
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-6 md:gap-8">
@@ -103,7 +122,11 @@ export default function SettingsPage() {
                     {...register('displayName')}
                     defaultValue={user?.displayName || ''}
                   />
-                  {errors.displayName && <p className="text-sm text-destructive">{errors.displayName.message}</p>}
+                  {errors.displayName && (
+                    <p className="text-sm text-destructive">
+                      {errors.displayName.message}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
@@ -115,6 +138,19 @@ export default function SettingsPage() {
                   />
                   <p className="text-xs text-muted-foreground">
                     Email address cannot be changed.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    value={(userProfile as any)?.phoneNumber || ''}
+                    disabled
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Phone number is used for SMS notifications and cannot be
+                    changed here.
                   </p>
                 </div>
               </CardContent>
@@ -130,25 +166,27 @@ export default function SettingsPage() {
           </Card>
         </div>
         <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Notification Settings</CardTitle>
-                    <CardDescription>Manage how you receive alerts.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex items-center justify-between rounded-lg border p-4">
-                        <div>
-                            <p className="font-medium">Air Quality Alerts</p>
-                            <p className="text-sm text-muted-foreground">Receive alerts when AQI is high.</p>
-                        </div>
-                        <Switch
-                            checked={areNotificationsEnabled}
-                            onCheckedChange={handleNotificationChange}
-                        />
-                    </div>
-                </CardContent>
-            </Card>
-            <Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Notification Settings</CardTitle>
+              <CardDescription>Manage how you receive alerts.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between rounded-lg border p-4">
+                <div>
+                  <p className="font-medium">Air Quality Alerts</p>
+                  <p className="text-sm text-muted-foreground">
+                    Receive alerts when AQI is high.
+                  </p>
+                </div>
+                <Switch
+                  checked={areNotificationsEnabled}
+                  onCheckedChange={handleNotificationChange}
+                />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
             <CardHeader>
               <CardTitle>Version Information</CardTitle>
               <CardDescription>
@@ -156,18 +194,22 @@ export default function SettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                    <span className="text-muted-foreground">App Version:</span>
-                    <span className="font-medium">{packageJson.version}</span>
-                </div>
-                 <div className="flex justify-between">
-                    <span className="text-muted-foreground">Next.js Version:</span>
-                    <span className="font-medium">{packageJson.dependencies.next}</span>
-                </div>
-                 <div className="flex justify-between">
-                    <span className="text-muted-foreground">React Version:</span>
-                    <span className="font-medium">{packageJson.dependencies.react}</span>
-                </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">App Version:</span>
+                <span className="font-medium">{packageJson.version}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Next.js Version:</span>
+                <span className="font-medium">
+                  {packageJson.dependencies.next}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">React Version:</span>
+                <span className="font-medium">
+                  {packageJson.dependencies.react}
+                </span>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -175,3 +217,5 @@ export default function SettingsPage() {
     </main>
   );
 }
+
+    
