@@ -267,5 +267,4 @@ export default function ConnectivityPage() {
       </Card>
     </main>
   );
-
-    
+}
