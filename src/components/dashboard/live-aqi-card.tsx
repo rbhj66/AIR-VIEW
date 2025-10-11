@@ -155,7 +155,7 @@ export default function LiveAqiCard({ isLoading, pm25 }: LiveAqiCardProps) {
         </div>
       </CardFooter>
       {/* This component handles automatic alerts and contains the audio element */}
-      <AirQualityAlert aqi={aqi} isLoading={isLoading} />
+      <AirQualityAlert aqi={aqi} isLoading={isLoading} phoneNumber={phoneNumber} isProfileLoading={isProfileLoading} />
     </Card>
   );
 }
