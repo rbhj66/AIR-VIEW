@@ -152,9 +152,9 @@ export default function DashboardPage() {
               </div>
             </div>
             {isLoading || airQualityData.purifiedAqi.value === null ? (
-                <Skeleton className="h-48 w-32" />
+              <Skeleton className="h-48 w-32" />
             ) : (
-                <PurifiedAqiIndicator purifiedAqi={airQualityData.purifiedAqi.value} />
+              <PurifiedAqiIndicator purifiedAqi={airQualityData.purifiedAqi.value} />
             )}
           </CardContent>
         </Card>
