@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Activity } from 'lucide-react';
+import { Activity, Wind } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function LivePulseChart() {
@@ -15,10 +15,10 @@ export default function LivePulseChart() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Activity /> System Status
+          <Wind /> Air Flow
         </CardTitle>
         <CardDescription>
-          A real-time visualization of system activity.
+          A real-time visualization of air flow activity.
         </CardDescription>
       </CardHeader>
       <CardContent>
