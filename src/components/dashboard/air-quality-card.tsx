@@ -45,6 +45,23 @@ export default function AirQualityCard({
         : 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300';
   
   const isLoading = value === null;
+  
+  if (isLoading) {
+    return (
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{title}</CardTitle>
+                <div className="text-muted-foreground">{icon}</div>
+            </CardHeader>
+            <CardContent>
+                <Skeleton className="h-8 w-24" />
+                <Skeleton className="mt-2 h-5 w-20" />
+                <Skeleton className="mt-4 h-20 w-full" />
+            </CardContent>
+        </Card>
+    );
+  }
+
 
   return (
     <Card className="flex flex-col">
@@ -54,12 +71,6 @@ export default function AirQualityCard({
       </CardHeader>
       <CardContent className="flex flex-1 flex-col justify-between">
         <div>
-          {isLoading ? (
-            <>
-              <Skeleton className="h-8 w-24" />
-              <Skeleton className="mt-2 h-5 w-20" />
-            </>
-          ) : (
             <>
             <div className="text-2xl font-bold">
               {value} <span className="text-sm font-normal text-muted-foreground">{unit}</span>
@@ -68,7 +79,6 @@ export default function AirQualityCard({
               {status}
             </Badge>
             </>
-          )}
         </div>
         <div className="h-20 w-full pt-4">
           <ChartContainer config={chartConfig} className="h-full w-full">
