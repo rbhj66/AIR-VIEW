@@ -11,10 +11,11 @@ import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import type { ChartDataPoint } from '@/lib/types';
 import { Badge } from '../ui/badge';
+import { Skeleton } from '../ui/skeleton';
 
 interface AirQualityCardProps {
   title: string;
-  value: number;
+  value: number | null;
   unit: string;
   icon: ReactNode;
   status: string;
@@ -37,11 +38,13 @@ export default function AirQualityCard({
   chartData,
 }: AirQualityCardProps) {
   const statusColor =
-    status === 'Good' || status === 'Excellent'
+    status === 'Good' || status === 'Excellent' || status === 'Comfortable' || status === 'Ideal'
       ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300'
-      : status === 'Moderate'
+      : status === 'Moderate' || status === 'Low' || status === 'High'
         ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300'
         : 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300';
+  
+  const isLoading = value === null;
 
   return (
     <Card className="flex flex-col">
@@ -51,12 +54,21 @@ export default function AirQualityCard({
       </CardHeader>
       <CardContent className="flex flex-1 flex-col justify-between">
         <div>
-          <div className="text-2xl font-bold">
-            {value} <span className="text-sm font-normal text-muted-foreground">{unit}</span>
-          </div>
-          <Badge className={cn('mt-1 text-xs font-medium', statusColor)}>
-            {status}
-          </Badge>
+          {isLoading ? (
+            <>
+              <Skeleton className="h-8 w-24" />
+              <Skeleton className="mt-2 h-5 w-20" />
+            </>
+          ) : (
+            <>
+            <div className="text-2xl font-bold">
+              {value} <span className="text-sm font-normal text-muted-foreground">{unit}</span>
+            </div>
+            <Badge className={cn('mt-1 text-xs font-medium', statusColor)}>
+              {status}
+            </Badge>
+            </>
+          )}
         </div>
         <div className="h-20 w-full pt-4">
           <ChartContainer config={chartConfig} className="h-full w-full">

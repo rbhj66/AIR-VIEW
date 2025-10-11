@@ -39,10 +39,10 @@ function SubmitButton() {
 
 interface RecommendationsCardProps {
   initialAirQuality: {
-    pm25: { value: number };
-    pm10: { value: number };
-    co2: { value: number };
-    voc: { value: number };
+    pm25: { value: number | null };
+    pm10: { value: number | null };
+    co2: { value: number | null };
+    voc: { value: number | null };
   };
 }
 
@@ -65,13 +65,15 @@ export default function RecommendationsCard({
     }
   }, [state, toast]);
 
+  const isLoading = initialAirQuality.pm25.value === null;
+
   return (
     <Card>
       <form action={formAction}>
-        <input type="hidden" name="pm25" value={initialAirQuality.pm25.value} />
-        <input type="hidden" name="pm10" value={initialAirQuality.pm10.value} />
-        <input type="hidden" name="co2" value={initialAirQuality.co2.value} />
-        <input type="hidden" name="vocs" value={initialAirQuality.voc.value} />
+        <input type="hidden" name="pm25" value={initialAirQuality.pm25.value ?? 0} />
+        <input type="hidden" name="pm10" value={initialAirQuality.pm10.value ?? 0} />
+        <input type="hidden" name="co2" value={initialAirQuality.co2.value ?? 0} />
+        <input type="hidden" name="vocs" value={initialAirQuality.voc.value ?? 0} />
 
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -90,6 +92,7 @@ export default function RecommendationsCard({
               name="roomSize"
               type="number"
               placeholder="e.g., 250"
+              disabled={isLoading}
             />
             {state.fieldErrors?.roomSize && (
               <p className="text-sm text-destructive">
@@ -104,6 +107,7 @@ export default function RecommendationsCard({
               name="userPreferences"
               placeholder="e.g., 'I prefer quiet operation at night and am sensitive to dust.'"
               className="min-h-24"
+              disabled={isLoading}
             />
             {state.fieldErrors?.userPreferences && (
               <p className="text-sm text-destructive">

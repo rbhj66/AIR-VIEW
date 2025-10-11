@@ -130,17 +130,17 @@ export default function DashboardPage() {
 
 
   const airQualityData = useMemo(() => {
-    if (isLoading || !latestReading) {
+    if (!latestReading) {
       return {
-        aqi: 0,
-        purifiedAqi: 0,
+        aqi: null,
+        purifiedAqi: null,
         status: 'Loading...',
-        pm25: { value: 0, unit: 'µg/m³' },
-        pm10: { value: 0, unit: 'µg/m³' },
-        co2: { value: 0, unit: 'ppm' },
-        voc: { value: 0, unit: 'ppb' },
-        temperature: { value: 0, unit: '°C' },
-        humidity: { value: 0, unit: '%' },
+        pm25: { value: null, unit: 'µg/m³' },
+        pm10: { value: null, unit: 'µg/m³' },
+        co2: { value: null, unit: 'ppm' },
+        voc: { value: null, unit: 'ppb' },
+        temperature: { value: null, unit: '°C' },
+        humidity: { value: null, unit: '%' },
       };
     }
     const aqi = calculateAqi(latestReading.pm25);
@@ -158,11 +158,12 @@ export default function DashboardPage() {
       temperature: { value: latestReading.temperature, unit: '°C' },
       humidity: { value: latestReading.humidity, unit: '%' },
     };
-  }, [latestReading, isLoading]);
+  }, [latestReading]);
   
-  const statusInfo = getStatusInfo(airQualityData.aqi);
+  const statusInfo = getStatusInfo(airQualityData.aqi ?? 0);
 
-  const getPollutantStatus = (pollutant: 'pm25' | 'pm10' | 'co2' | 'vocs' | 'temperature' | 'humidity', value: number) => {
+  const getPollutantStatus = (pollutant: 'pm25' | 'pm10' | 'co2' | 'vocs' | 'temperature' | 'humidity', value: number | null) => {
+    if (value === null) return 'Loading...';
     // Simplified status logic for individual pollutants
     if (pollutant === 'pm25') {
       if (value <= 12) return 'Good';
@@ -198,7 +199,7 @@ export default function DashboardPage() {
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-6 md:gap-8">
-      <AirQualityAlert aqi={airQualityData.aqi} isLoading={isLoading} />
+      <AirQualityAlert aqi={airQualityData.aqi ?? 0} isLoading={isLoading} />
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
          <Card>
             <CardHeader>
@@ -207,11 +208,11 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="flex flex-col md:flex-row items-center justify-center gap-4">
                <div className="flex flex-col items-center justify-center gap-4 rounded-lg p-4 text-center">
-                {isLoading ? <Skeleton className="h-48 w-48 rounded-full" /> : <AqiCircle value={airQualityData.aqi} />}
-                {isLoading ? <Skeleton className="h-6 w-24 rounded-full" /> : <Badge className={statusInfo.color}>{airQualityData.status}</Badge>}
+                {isLoading || airQualityData.aqi === null ? <Skeleton className="h-48 w-48 rounded-full" /> : <AqiCircle value={airQualityData.aqi} />}
+                {isLoading || airQualityData.aqi === null ? <Skeleton className="h-6 w-24 rounded-full" /> : <Badge className={statusInfo.color}>{airQualityData.status}</Badge>}
               </div>
 
-              {showPurifiedAqi && (
+              {showPurifiedAqi && airQualityData.purifiedAqi !== null && (
                 <>
                 <div className="flex items-center justify-center">
                     <ArrowRight className="h-8 w-8 text-muted-foreground animate-pulse" />

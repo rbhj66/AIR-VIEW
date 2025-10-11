@@ -7,8 +7,8 @@ import { AlertTriangle } from 'lucide-react';
 
 interface HarmfulGasesProps {
   isLoading: boolean;
-  co2: number;
-  vocs: number;
+  co2: number | null;
+  vocs: number | null;
 }
 
 // Thresholds for "Poor" air quality for sensitive groups like children
@@ -23,15 +23,16 @@ const GasIndicator = ({
   isLoading,
 }: {
   name: string;
-  value: number;
+  value: number | null;
   unit: string;
   threshold: number;
   isLoading: boolean;
 }) => {
-  const percentage = isLoading ? 0 : Math.min((value / threshold) * 100, 100);
-  const isHarmful = value >= threshold;
+  const isDataLoading = isLoading || value === null;
+  const percentage = isDataLoading ? 0 : Math.min((value / threshold) * 100, 100);
+  const isHarmful = !isDataLoading && value >= threshold;
 
-  if (isLoading) {
+  if (isDataLoading) {
     return (
       <div className="space-y-2">
         <div className="flex justify-between items-baseline">
