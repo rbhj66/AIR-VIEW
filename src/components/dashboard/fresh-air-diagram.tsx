@@ -1,12 +1,12 @@
 'use client';
 
 import { Wind, Home, AirVent, Building2, Car, ArrowRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const AnimatedArrow = ({ delay }: { delay: string }) => (
-  <ArrowRight
-    className="h-6 w-6 animate-flow-x text-muted-foreground"
-    style={{ animationDelay: delay }}
-  />
+    <div className="relative w-6 h-6 text-muted-foreground animate-flow-x" style={{ animationDelay: delay }}>
+        <ArrowRight className="absolute inset-0" />
+    </div>
 );
 
 export default function FreshAirDiagram() {
