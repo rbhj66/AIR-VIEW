@@ -89,12 +89,12 @@ const GasIndicator = ({
   );
 };
 
-const StaticGasIndicator = ({ name, formula }: { name: string, formula: string }) => (
+const StaticGasIndicator = ({ name, formula, value, unit }: { name: string; formula: string; value: string; unit: string; }) => (
     <div className="space-y-2 opacity-60">
       <div className="flex justify-between items-baseline">
         <span className="font-semibold">{name}</span>
-        <span className="text-sm font-semibold text-muted-foreground">
-          ---
+        <span className="text-sm font-semibold text-foreground">
+          {value} <span className="text-xs text-muted-foreground">{unit}</span>
         </span>
       </div>
       <p className="text-sm text-muted-foreground -mt-2">{formula}</p>
@@ -111,16 +111,16 @@ export default function HarmfulGases({ isLoading, co2Data, vocsData }: HarmfulGa
       <CardHeader>
         <CardTitle className='flex items-center gap-2'><Wind /> Hazardous Gases</CardTitle>
         <CardDescription>
-          Common indoor pollutants and live concentration levels from your sensor.
+          Common indoor pollutants and their typical concentration levels.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <StaticGasIndicator name="Carbon Dioxide" formula="CO2" />
-        <StaticGasIndicator name="Volatile Organic Compounds" formula="VOCs" />
-        <StaticGasIndicator name="Particulate Matter 2.5" formula="PM2.5" />
-        <StaticGasIndicator name="Particulate Matter 10" formula="PM10" />
-        <StaticGasIndicator name="Ozone" formula="O3" />
-        <StaticGasIndicator name="Nitrogen Dioxide" formula="NO2" />
+        <StaticGasIndicator name="Carbon Dioxide" formula="CO2" value="450" unit="ppm" />
+        <StaticGasIndicator name="Volatile Organic Compounds" formula="VOCs" value="120" unit="ppb" />
+        <StaticGasIndicator name="Particulate Matter 2.5" formula="PM2.5" value="15" unit="μg/m³" />
+        <StaticGasIndicator name="Particulate Matter 10" formula="PM10" value="25" unit="μg/m³" />
+        <StaticGasIndicator name="Ozone" formula="O3" value="0.03" unit="ppm" />
+        <StaticGasIndicator name="Nitrogen Dioxide" formula="NO2" value="0.01" unit="ppm" />
 
       </CardContent>
     </Card>
