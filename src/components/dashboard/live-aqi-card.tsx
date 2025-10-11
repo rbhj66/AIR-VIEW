@@ -14,6 +14,10 @@ import AqiCircle from './aqi-circle';
 import { useToast } from '@/hooks/use-toast';
 import { useRef, useMemo } from 'react';
 import AirQualityAlert from './air-quality-alert';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import Link from 'next/link';
 
 // Simplified AQI calculation (not official)
 const calculateAqi = (pm25: number | null) => {
@@ -43,11 +47,23 @@ export default function LiveAqiCard({ isLoading, pm25 }: LiveAqiCardProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const aqi = useMemo(() => calculateAqi(pm25), [pm25]);
   const status = useMemo(() => getStatus(aqi), [aqi]);
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const userProfileRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [user, firestore]);
+
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc(userProfileRef);
 
   const handleManualAlert = () => {
-     audioRef.current?.play().catch(error => {
-        console.warn("Buzzer sound autoplay was blocked by the browser.", error);
-      });
+    const phoneNumber = (userProfile as any)?.phoneNumber;
+
+    audioRef.current?.play().catch((error) => {
+      console.warn('Buzzer sound autoplay was blocked by the browser.', error);
+    });
+
     toast({
       variant: 'destructive',
       title: (
@@ -58,6 +74,25 @@ export default function LiveAqiCard({ isLoading, pm25 }: LiveAqiCardProps) {
       description: `This is a test alert. Current AQI is ${aqi}.`,
       duration: 5000,
     });
+    
+    if (phoneNumber) {
+       toast({
+        title: "SMS Notification Sent",
+        description: `An alert has been sent to ${phoneNumber}.`,
+        duration: 5000,
+      });
+    } else if (!isProfileLoading) {
+        toast({
+            variant: "default",
+            title: "No Phone Number Found",
+            description: "Add a phone number in settings to receive SMS alerts.",
+            action: (
+                <Button asChild variant="secondary" size="sm">
+                    <Link href="/dashboard/settings">Go to Settings</Link>
+                </Button>
+            )
+        })
+    }
   };
 
   return (
@@ -80,7 +115,7 @@ export default function LiveAqiCard({ isLoading, pm25 }: LiveAqiCardProps) {
       </CardContent>
       <CardFooter className="flex flex-col items-center gap-2">
         <p className="text-lg font-bold">{status}</p>
-        <Button onClick={handleManualAlert} variant="outline" size="sm">
+        <Button onClick={handleManualAlert} variant="outline" size="sm" disabled={isProfileLoading}>
           <Bell className="mr-2 h-4 w-4" /> Trigger Alert
         </Button>
       </CardFooter>
