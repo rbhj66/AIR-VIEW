@@ -5,7 +5,7 @@ import { useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, Timestamp, where } from 'firebase/firestore';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import PredictionCard from '@/components/dashboard/prediction-card';
-import PollutantCorrelationScatterChart from '@/components/dashboard/analytics/pollutant-correlation-scatter-chart';
+import AnimatedPollutantPieChart from '@/components/dashboard/analytics/animated-pollutant-pie-chart';
 
 export default function AnalyticsPage() {
   const firestore = useFirestore();
@@ -40,7 +40,7 @@ export default function AnalyticsPage() {
         <PredictionCard />
       </div>
        <div className="grid grid-cols-1 gap-4 lg:gap-8">
-          <PollutantCorrelationScatterChart 
+          <AnimatedPollutantPieChart 
             sensorReadings={sensorReadings}
             isLoading={isLoadingReadings}
           />
