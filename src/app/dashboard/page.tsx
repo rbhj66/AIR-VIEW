@@ -6,6 +6,7 @@ import {
   query,
   orderBy,
   Timestamp,
+  limit,
 } from 'firebase/firestore';
 import { useMemo } from 'react';
 import {
@@ -27,6 +28,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import HarmfulGases from '@/components/dashboard/harmful-gases';
 import AirQualityAlert from '@/components/dashboard/air-quality-alert';
 import I2CDisplay from '@/components/dashboard/i2c-display';
+import PurifiedAqiIndicator from '@/components/dashboard/purified-aqi-indicator';
 
 // Simplified AQI calculation (not official)
 const calculateAqi = (pm25: number) => {
@@ -104,9 +106,11 @@ export default function DashboardPage() {
     const humidity = latestReading?.humidity ?? null;
 
     const aqi = pm25 !== null ? calculateAqi(pm25) : null;
+    const purifiedAqi = aqi !== null ? Math.round(aqi * 0.6) : null;
     
     return {
       aqi: { value: aqi, status: aqi !== null ? getStatus(aqi, { good: 50, moderate: 100 }) : 'Loading'},
+      purifiedAqi: { value: purifiedAqi },
       pm25: { value: pm25, chartData: dataPoints.pm25, status: pm25 !== null ? getStatus(pm25, { good: 12, moderate: 35 }) : 'Loading' },
       pm10: { value: pm10, chartData: dataPoints.pm10, status: pm10 !== null ? getStatus(pm10, { good: 54, moderate: 154 }) : 'Loading' },
       co2: { value: co2, chartData: dataPoints.co2, status: co2 !== null ? getStatus(co2, { good: 1000, moderate: 2000 }) : 'Loading' },
@@ -126,7 +130,7 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>Overall Air Quality</CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center gap-6 text-center sm:flex-row sm:text-left">
+          <CardContent className="flex flex-col items-center justify-center gap-6 text-center sm:flex-row sm:gap-12 sm:text-left">
             {isLoading || airQualityData.aqi.value === null ? (
               <Skeleton className="h-48 w-48 rounded-full" />
             ) : (
@@ -147,6 +151,11 @@ export default function DashboardPage() {
                 )}
               </div>
             </div>
+            {isLoading || airQualityData.purifiedAqi.value === null ? (
+                <Skeleton className="h-48 w-32" />
+            ) : (
+                <PurifiedAqiIndicator purifiedAqi={airQualityData.purifiedAqi.value} />
+            )}
           </CardContent>
         </Card>
         <div className="flex flex-col gap-4">
