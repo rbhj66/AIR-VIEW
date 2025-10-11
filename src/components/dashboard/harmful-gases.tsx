@@ -20,14 +20,29 @@ const GasIndicator = ({
   value,
   unit,
   threshold,
+  isLoading,
 }: {
   name: string;
   value: number;
   unit: string;
   threshold: number;
+  isLoading: boolean;
 }) => {
-  const percentage = Math.min((value / threshold) * 100, 100);
+  const percentage = isLoading ? 0 : Math.min((value / threshold) * 100, 100);
   const isHarmful = value >= threshold;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-2">
+        <div className="flex justify-between items-baseline">
+           <Skeleton className="h-5 w-48" />
+           <Skeleton className="h-4 w-16" />
+        </div>
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-3 w-32 ml-auto" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-2">
@@ -50,29 +65,6 @@ const GasIndicator = ({
 
 
 export default function HarmfulGases({ isLoading, co2, vocs }: HarmfulGasesProps) {
-  if (isLoading) {
-      return (
-          <Card>
-              <CardHeader>
-                <CardTitle>Hazardous Gases for Children</CardTitle>
-                <CardDescription>Loading gas level analysis...</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-3 w-32 ml-auto" />
-                </div>
-                 <div className="space-y-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-3 w-32 ml-auto" />
-                </div>
-              </CardContent>
-          </Card>
-      )
-  }
-  
   return (
     <Card>
       <CardHeader>
@@ -88,12 +80,14 @@ export default function HarmfulGases({ isLoading, co2, vocs }: HarmfulGasesProps
           value={co2}
           unit="ppm"
           threshold={CO2_POOR_THRESHOLD}
+          isLoading={isLoading}
         />
         <GasIndicator
           name="Volatile Organic Compounds (VOCs)"
           value={vocs}
           unit="ppb"
           threshold={VOCS_POOR_THRESHOLD}
+          isLoading={isLoading}
         />
       </CardContent>
     </Card>
