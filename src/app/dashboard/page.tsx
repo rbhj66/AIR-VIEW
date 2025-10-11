@@ -4,18 +4,20 @@ import DeviceControlCard from '@/components/dashboard/device-control-card';
 import HistoricalDataChart from '@/components/dashboard/historical-data-chart';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FlaskConical, Wind, Beaker } from 'lucide-react';
+import { FlaskConical, Wind, Beaker, ArrowRight } from 'lucide-react';
 import AqiCircle from '@/components/dashboard/aqi-circle';
 import PredictionCard from '@/components/dashboard/prediction-card';
 import RecommendationsCard from '@/components/dashboard/recommendations-card';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, limit, query, orderBy, Timestamp, where } from 'firebase/firestore';
-import { useMemo } from 'react';
+import { collection, limit, query, orderBy, Timestamp, where, doc } from 'firebase/firestore';
+import { useMemo, useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import AirQualityAlert from '@/components/dashboard/air-quality-alert';
 import AirQualityCard from '@/components/dashboard/air-quality-card';
 import { ChartDataPoint } from '@/lib/types';
 import HarmfulGases from '@/components/dashboard/harmful-gases';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import PurifiedAqiIndicator from '@/components/dashboard/purified-aqi-indicator';
 
 // Simplified AQI calculation (not official)
 const calculateAqi = (pm25: number) => {
@@ -64,8 +66,10 @@ const getStatusInfo = (aqi: number) => {
 
 export default function DashboardPage() {
   const firestore = useFirestore();
+  const [showPurifiedAqi, setShowPurifiedAqi] = useState(false);
   
   const sensorId = 'living_room_sensor';
+  const deviceId = 'living_room_purifier';
 
   const readingsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -76,10 +80,29 @@ export default function DashboardPage() {
       orderBy('timestamp', 'desc')
     );
   }, [firestore, sensorId]);
+  
+  const deviceRef = useMemoFirebase(() => {
+    if(!firestore) return null;
+    return doc(firestore, 'air_purifier_devices', deviceId);
+  }, [firestore, deviceId]);
 
   const { data: readings, isLoading } = useCollection(readingsQuery);
+  const { data: deviceState } = useDoc(deviceRef);
   
   const latestReading = useMemo(() => readings?.[0] as any, [readings]);
+  
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (deviceState?.isPoweredOn) {
+      // Show the purified AQI after 5 seconds of the device being on
+      timer = setTimeout(() => {
+        setShowPurifiedAqi(true);
+      }, 5000);
+    } else {
+      setShowPurifiedAqi(false);
+    }
+    return () => clearTimeout(timer);
+  }, [deviceState?.isPoweredOn]);
   
   const historicalChartData = useMemo(() => {
     if (!readings) return {};
@@ -106,6 +129,7 @@ export default function DashboardPage() {
     if (isLoading || !latestReading) {
       return {
         aqi: 0,
+        purifiedAqi: 0,
         status: 'Loading...',
         pm25: { value: 0, unit: 'µg/m³' },
         pm10: { value: 0, unit: 'µg/m³' },
@@ -114,8 +138,12 @@ export default function DashboardPage() {
       };
     }
     const aqi = calculateAqi(latestReading.pm25);
+    // Simulate a 40% improvement in AQI when purifier is on
+    const purifiedAqi = Math.round(aqi * 0.6); 
+
     return {
       aqi,
+      purifiedAqi,
       status: getStatusInfo(aqi).status,
       pm25: { value: latestReading.pm25, unit: 'µg/m³' },
       pm10: { value: latestReading.pm10, unit: 'µg/m³' },
@@ -160,11 +188,21 @@ export default function DashboardPage() {
                 <CardTitle>Overall Air Quality</CardTitle>
                 <CardDescription>{isLoading ? 'Loading live data...' : statusInfo.description}</CardDescription>
             </CardHeader>
-            <CardContent className="flex items-center justify-center gap-8">
+            <CardContent className="flex flex-col md:flex-row items-center justify-center gap-4">
                <div className="flex flex-col items-center justify-center gap-4 rounded-lg p-4 text-center">
                 {isLoading ? <Skeleton className="h-48 w-48 rounded-full" /> : <AqiCircle value={airQualityData.aqi} />}
                 {isLoading ? <Skeleton className="h-6 w-24 rounded-full" /> : <Badge className={statusInfo.color}>{airQualityData.status}</Badge>}
               </div>
+
+              {showPurifiedAqi && (
+                <>
+                <div className="flex items-center justify-center">
+                    <ArrowRight className="h-8 w-8 text-muted-foreground animate-pulse" />
+                </div>
+                <PurifiedAqiIndicator purifiedAqi={airQualityData.purifiedAqi} />
+                </>
+              )}
+
             </CardContent>
           </Card>
           <DeviceControlCard className="h-full" />

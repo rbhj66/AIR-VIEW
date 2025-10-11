@@ -1,8 +1,10 @@
 'use client';
 import { RadialBar, RadialBarChart, PolarAngleAxis } from 'recharts';
+import { cn } from '@/lib/utils';
 
 interface AqiCircleProps {
   value: number;
+  size?: 'md' | 'sm';
 }
 
 const MAX_AQI = 300; // AQI can go higher, but this is a common scale top for "Hazardous"
@@ -16,19 +18,25 @@ const getColor = (value: number) => {
   return '#795548'; // Hazardous
 };
 
-export default function AqiCircle({ value }: AqiCircleProps) {
+export default function AqiCircle({ value, size = 'md' }: AqiCircleProps) {
   const data = [{ name: 'AQI', value: value, fill: getColor(value) }];
+  const chartSize = size === 'md' ? 192 : 128;
+  const barSize = size === 'md' ? 20 : 14;
+  const innerRadius = size === 'md' ? "70%" : "65%";
+  const outerRadius = size === 'md' ? "90%" : "85%";
+  const circleRadius = size === 'md' ? "68%" : "63%";
+
 
   return (
-    <div className="relative h-48 w-48">
+    <div className={cn("relative", size === 'md' ? "h-48 w-48" : "h-32 w-32")}>
       <RadialBarChart
-        width={192}
-        height={192}
+        width={chartSize}
+        height={chartSize}
         cx="50%"
         cy="50%"
-        innerRadius="70%"
-        outerRadius="90%"
-        barSize={20}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius}
+        barSize={barSize}
         data={data}
         startAngle={90}
         endAngle={-270}
@@ -51,13 +59,19 @@ export default function AqiCircle({ value }: AqiCircleProps) {
             <stop offset="90%" stopColor="hsl(var(--background))" stopOpacity={1} />
           </radialGradient>
         </defs>
-        <circle cx="50%" cy="50%" r="68%" fill="url(#aqiGradient)" />
+        <circle cx="50%" cy="50%" r={circleRadius} fill="url(#aqiGradient)" />
       </RadialBarChart>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <span className="text-5xl font-bold text-foreground drop-shadow-sm">
+        <span className={cn(
+            "font-bold text-foreground drop-shadow-sm",
+             size === 'md' ? "text-5xl" : "text-4xl"
+            )}>
           {value}
         </span>
-        <span className="text-sm font-medium text-muted-foreground leading-tight">
+        <span className={cn(
+            "font-medium text-muted-foreground leading-tight",
+            size === 'md' ? "text-sm" : "text-xs"
+            )}>
           Live AQI
         </span>
       </div>
