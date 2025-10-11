@@ -88,11 +88,11 @@ export default function ConnectivityPage() {
                 </div>
                 <div className="w-full space-y-2">
                   <p className="font-semibold">Step 1: Configure Credentials</p>
-                  <p className="text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground">
                     Copy your Firebase project details below and paste them into
                     the <Badge variant="outline">secrets.h</Badge> tab in the
                     Wokwi simulation.
-                  </p>
+                  </div>
                   <div className="space-y-2 rounded-md bg-background/50 p-2">
                     <CredentialDisplay
                       label="Project ID"
