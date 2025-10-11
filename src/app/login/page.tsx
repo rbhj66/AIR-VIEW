@@ -70,7 +70,7 @@ export default function LoginPage() {
       <div className="absolute left-4 top-4">
         <AppLogo />
       </div>
-      <Card className="w-full max-w-sm">
+      <Card className="w-full max-w-sm border-border bg-card/80 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
