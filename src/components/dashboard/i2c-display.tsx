@@ -25,16 +25,16 @@ export default function I2CDisplay({ aqi, pm25, temperature, humidity, isLoading
             <span className="font-bold">{aqi ?? '---'}</span>
         </div>
         <div className="flex items-center justify-between">
-            <span>PM2.5:</span>
-            <span className="font-bold">{formatValue(pm25)}</span>
+            <span>{formatValue(pm25)}</span>
+            <span className="font-bold text-xs">PM2.5</span>
         </div>
         <div className="flex items-center justify-between">
-            <span>Temp:</span>
-            <span className="font-bold">{formatValue(temperature)} &deg;C</span>
+            <span>{formatValue(temperature)}</span>
+            <span className="font-bold">&deg;C</span>
         </div>
         <div className="flex items-center justify-between">
-            <span>Hum:</span>
-            <span className="font-bold">{formatValue(humidity)} %</span>
+            <span>{formatValue(humidity)}</span>
+            <span className="font-bold">%</span>
         </div>
       </div>
     </div>
