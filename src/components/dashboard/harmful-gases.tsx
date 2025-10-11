@@ -17,12 +17,14 @@ const VOCS_POOR_THRESHOLD = 500; // ppb
 
 const GasIndicator = ({
   name,
+  formula,
   value,
   unit,
   threshold,
   isLoading,
 }: {
   name: string;
+  formula: string;
   value: number | null;
   unit: string;
   threshold: number;
@@ -53,7 +55,7 @@ const GasIndicator = ({
             <span className="font-semibold">{name}</span>
         </div>
         <span className="text-sm text-muted-foreground">
-          {value} {unit}
+          {formula}: {value} {unit}
         </span>
       </div>
       <Progress value={percentage} />
@@ -77,14 +79,16 @@ export default function HarmfulGases({ isLoading, co2, vocs }: HarmfulGasesProps
       </CardHeader>
       <CardContent className="space-y-6">
         <GasIndicator
-          name="Carbon Dioxide (CO2)"
+          name="Carbon Dioxide"
+          formula="CO2"
           value={co2}
           unit="ppm"
           threshold={CO2_POOR_THRESHOLD}
           isLoading={isLoading}
         />
         <GasIndicator
-          name="Volatile Organic Compounds (VOCs)"
+          name="Volatile Organic Compounds"
+          formula="VOCs"
           value={vocs}
           unit="ppb"
           threshold={VOCS_POOR_THRESHOLD}
