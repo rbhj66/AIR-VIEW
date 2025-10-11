@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Area, AreaChart, Tooltip } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '../ui/chart';
 import type { ChartDataPoint } from '@/lib/types';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Wind } from 'lucide-react';
 
 interface GasData {
     value: number | null;
@@ -16,10 +16,6 @@ interface HarmfulGasesProps {
   co2Data: GasData;
   vocsData: GasData;
 }
-
-// Thresholds for "Poor" air quality for sensitive groups like children
-const CO2_POOR_THRESHOLD = 2000; // ppm
-const VOCS_POOR_THRESHOLD = 500; // ppb
 
 const GasIndicator = ({
   name,
@@ -76,7 +72,7 @@ const GasIndicator = ({
          <ChartContainer config={chartConfig} className="h-full w-full">
             <AreaChart accessibilityLayer data={data.history} margin={{ left: 0, right: 0, top: 0, bottom: 0 }}>
                 <defs>
-                    <linearGradient id={`fill${name}`} x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient id={`fill${name.replace(/ /g, '')}`} x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor={chartColor} stopOpacity={0.8} />
                         <stop offset="95%" stopColor={chartColor} stopOpacity={0.1} />
                     </linearGradient>
@@ -85,7 +81,7 @@ const GasIndicator = ({
                     cursor={false}
                     content={<ChartTooltipContent hideLabel indicator='dot' formatter={(value) => [`${value} ${unit}`, name]} />}
                 />
-                <Area dataKey="value" type="natural" fill={`url(#fill${name})`} stroke={chartColor} stackId="a" dot={false} />
+                <Area dataKey="value" type="natural" fill={`url(#fill${name.replace(/ /g, '')})`} stroke={chartColor} stackId="a" dot={false} />
             </AreaChart>
          </ChartContainer>
       </div>
@@ -93,17 +89,32 @@ const GasIndicator = ({
   );
 };
 
+const StaticGasIndicator = ({ name, formula }: { name: string, formula: string }) => (
+    <div className="space-y-2 opacity-60">
+      <div className="flex justify-between items-baseline">
+        <span className="font-semibold">{name}</span>
+        <span className="text-sm font-semibold text-muted-foreground">
+          ---
+        </span>
+      </div>
+      <p className="text-sm text-muted-foreground -mt-2">{formula}</p>
+      <div className="h-20 w-full flex items-center justify-center rounded-md bg-muted/30">
+          <span className="text-xs text-muted-foreground">No live data</span>
+      </div>
+    </div>
+);
+
 
 export default function HarmfulGases({ isLoading, co2Data, vocsData }: HarmfulGasesProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Hazardous Gases for Children</CardTitle>
+        <CardTitle className='flex items-center gap-2'><Wind /> Hazardous Gases</CardTitle>
         <CardDescription>
-          Live concentration levels of gases that can be harmful to sensitive groups.
+          Common indoor pollutants and live concentration levels from your sensor.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-8">
+      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <GasIndicator
           name="Carbon Dioxide"
           formula="CO2"
@@ -122,7 +133,16 @@ export default function HarmfulGases({ isLoading, co2Data, vocsData }: HarmfulGa
           isLoading={isLoading}
           chartColor='hsl(var(--chart-4))'
         />
+        <StaticGasIndicator name="Particulate Matter 2.5" formula="PM2.5" />
+        <StaticGasIndicator name="Particulate Matter 10" formula="PM10" />
+        <StaticGasIndicator name="Ozone" formula="O3" />
+        <StaticGasIndicator name="Nitrogen Dioxide" formula="NO2" />
+
       </CardContent>
     </Card>
   );
 }
+
+// Thresholds for "Poor" air quality for sensitive groups like children
+const CO2_POOR_THRESHOLD = 2000; // ppm
+const VOCS_POOR_THRESHOLD = 500; // ppb
