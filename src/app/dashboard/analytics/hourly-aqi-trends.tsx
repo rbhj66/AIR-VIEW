@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/select';
 import { Activity } from 'lucide-react';
 import { useState, useMemo } from 'react';
-import { Skeleton } from '../ui/skeleton';
+import { Skeleton } from '../../../components/ui/skeleton';
 
 // Simplified AQI calculation (not official)
 const calculateAqi = (pm25: number) => {
