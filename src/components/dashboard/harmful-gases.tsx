@@ -179,24 +179,24 @@ export default function HarmfulGases({
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              <p>Current Reading: <Badge>{co2.value} ppm</Badge></p>
+              <p>Current Reading: <Badge variant="secondary">{co2.value} ppm</Badge></p>
               <Separator />
               <h4 className="font-semibold">Health Guidelines</h4>
                <ul className="space-y-2">
                 {levels.co2.map(item => (
-                  <li key={item.level}><Badge variant="secondary">{item.level}</Badge> ({item.range}): {item.description}</li>
+                  <li key={item.level}><Badge variant="outline">{item.level}</Badge> ({item.range}): {item.description}</li>
                 ))}
               </ul>
               <Separator />
               <h4 className="font-semibold">Impact on Children</h4>
-              <p className="text-sm">
+              <p className="text-sm text-muted-foreground">
                 Children are more vulnerable to high CO₂ levels. It can affect
                 their concentration and learning in school environments and
                 cause discomfort in poorly ventilated rooms.
               </p>
                <Separator />
               <h4 className="font-semibold">Recommendations</h4>
-              <p className="text-sm">
+              <p className="text-sm text-muted-foreground">
                 To reduce CO₂ levels, increase ventilation by opening windows or using mechanical ventilation systems.
               </p>
             </div>
@@ -245,22 +245,22 @@ export default function HarmfulGases({
               </DialogDescription>
             </DialogHeader>
              <div className="space-y-4">
-              <p>Current Reading: <Badge>{vocs.value} ppb</Badge></p>
+              <p>Current Reading: <Badge variant="secondary">{vocs.value} ppb</Badge></p>
               <Separator />
               <h4 className="font-semibold">Health Guidelines</h4>
               <ul className="space-y-2">
                 {levels.vocs.map(item => (
-                  <li key={item.level}><Badge variant="secondary">{item.level}</Badge> ({item.range}): {item.description}</li>
+                  <li key={item.level}><Badge variant="outline">{item.level}</Badge> ({item.range}): {item.description}</li>
                 ))}
               </ul>
               <Separator />
               <h4 className="font-semibold">Impact on Children</h4>
-              <p className="text-sm">
+              <p className="text-sm text-muted-foreground">
                 Children's developing bodies can be more susceptible to VOCs, which can exacerbate asthma and allergies. Long-term exposure is a concern.
               </p>
               <Separator />
               <h4 className="font-semibold">Recommendations</h4>
-              <p className="text-sm">
+              <p className="text-sm text-muted-foreground">
                 Use low-VOC products, ensure good ventilation when using cleaning agents, and use an air purifier with a carbon filter.
               </p>
             </div>
@@ -269,25 +269,31 @@ export default function HarmfulGases({
         <Dialog>
           <DialogTrigger asChild>
             <div className="cursor-pointer flex flex-col justify-between gap-4 rounded-lg bg-muted/30 p-4 transition-all hover:ring-2 hover:ring-primary">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <O2Icon />
-                </div>
-                <div>
-                  {isLoading ? (
-                    <>
-                      <Skeleton className="h-5 w-24" />
-                      <Skeleton className="mt-2 h-4 w-12" />
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-xl font-bold">Oxygen: 20.9%</p>
-                      <p className="text-sm text-muted-foreground">Normal</p>
-                    </>
-                  )}
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                    <O2Icon />
+                  </div>
+                  <div>
+                    {isLoading ? (
+                      <>
+                        <Skeleton className="h-5 w-24" />
+                        <Skeleton className="mt-2 h-4 w-12" />
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-xl font-bold">Oxygen: 20.9%</p>
+                        <p className="text-sm text-muted-foreground">Normal</p>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
-              {isLoading && <Skeleton className="h-10 w-full" />}
+                {isLoading ? (
+                    <Skeleton className="h-10 w-full" />
+                ) : (
+                    <div className="h-10 w-full" /> 
+                )}
             </div>
           </DialogTrigger>
           <DialogContent>
@@ -298,13 +304,13 @@ export default function HarmfulGases({
               </DialogDescription>
             </DialogHeader>
              <div className="space-y-4">
-                <p>Normal Level: <Badge>~20.9%</Badge></p>
+                <p>Normal Level: <Badge variant="secondary">~20.9%</Badge></p>
                 <Separator />
                 <h4 className="font-semibold">Information</h4>
-                <p className='text-sm'>Indoor oxygen levels are typically stable and very close to outdoor levels. Significant drops are rare in normal residential environments. This reading is a standard placeholder, as most consumer-grade air quality sensors do not measure oxygen.</p>
+                <p className='text-sm text-muted-foreground'>Indoor oxygen levels are typically stable and very close to outdoor levels. Significant drops are rare in normal residential environments. This reading is a standard placeholder, as most consumer-grade air quality sensors do not measure oxygen.</p>
                 <Separator />
                 <h4 className="font-semibold">Impact on Children</h4>
-                <p className='text-sm'>Normal oxygen levels are critical for healthy development. Ensuring good overall air quality and ventilation helps maintain these levels.</p>
+                <p className='text-sm text-muted-foreground'>Normal oxygen levels are critical for healthy development. Ensuring good overall air quality and ventilation helps maintain these levels.</p>
             </div>
           </DialogContent>
         </Dialog>
