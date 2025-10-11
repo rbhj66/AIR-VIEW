@@ -18,6 +18,7 @@ import { ChartDataPoint } from '@/lib/types';
 import HarmfulGases from '@/components/dashboard/harmful-gases';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import PurifiedAqiIndicator from '@/components/dashboard/purified-aqi-indicator';
+import I2CDisplay from '@/components/dashboard/i2c-display';
 
 // Simplified AQI calculation (not official)
 const calculateAqi = (pm25: number) => {
@@ -229,7 +230,7 @@ export default function DashboardPage() {
                 <PurifiedAqiIndicator purifiedAqi={airQualityData.purifiedAqi} />
                 </>
               )}
-
+               <I2CDisplay aqi={airQualityData.aqi} isLoading={isLoading} />
             </CardContent>
           </Card>
           <DeviceControlCard className="h-full" />
