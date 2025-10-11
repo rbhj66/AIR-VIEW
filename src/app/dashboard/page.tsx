@@ -239,7 +239,26 @@ export default function DashboardPage() {
                 />
             </CardContent>
           </Card>
-          <DeviceControlCard className="h-full" />
+          <Card>
+            <CardHeader>
+                <CardTitle>Live Sensor Simulation</CardTitle>
+                <CardDescription>This is a live Wokwi simulation of an ESP32 microcontroller.</CardDescription>
+            </CardHeader>
+             <CardContent>
+              <div className="aspect-[4/3] w-full">
+                <iframe
+                  src="https://wokwi.com/projects/393138883758206977?embed=1"
+                  className="h-full w-full rounded-md border"
+                  allow="autoplay; encrypted-media"
+                  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+                ></iframe>
+              </div>
+            </CardContent>
+          </Card>
+      </div>
+      
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
+        <DeviceControlCard className="h-full" />
       </div>
         
        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 lg:gap-8">
