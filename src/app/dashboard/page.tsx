@@ -22,13 +22,8 @@ import type { ChartDataPoint } from '@/lib/types';
 import DeviceControlCard from '@/components/dashboard/device-control-card';
 import RecommendationsCard from '@/components/dashboard/recommendations-card';
 import HistoricalDataChart from '@/components/dashboard/historical-data-chart';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import AqiCircle from '@/components/dashboard/aqi-circle';
-import { Skeleton } from '@/components/ui/skeleton';
 import HarmfulGases from '@/components/dashboard/harmful-gases';
 import AirQualityAlert from '@/components/dashboard/air-quality-alert';
-import I2CDisplay from '@/components/dashboard/i2c-display';
-import PurifiedAqiIndicator from '@/components/dashboard/purified-aqi-indicator';
 
 // Simplified AQI calculation (not official)
 const calculateAqi = (pm25: number) => {
@@ -108,11 +103,9 @@ export default function DashboardPage() {
     const humidity = latestReading?.humidity ?? null;
 
     const aqi = pm25 !== null ? calculateAqi(pm25) : null;
-    const purifiedAqi = aqi !== null ? Math.round(aqi * 0.6) : null;
     
     return {
       aqi: { value: aqi, status: aqi !== null ? getStatus(aqi, { good: 50, moderate: 100 }) : 'Loading'},
-      purifiedAqi: { value: purifiedAqi },
       pm25: { value: pm25, chartData: dataPoints.pm25, status: pm25 !== null ? getStatus(pm25, { good: 12, moderate: 35 }) : 'Loading' },
       pm10: { value: pm10, chartData: dataPoints.pm10, status: pm10 !== null ? getStatus(pm10, { good: 54, moderate: 154 }) : 'Loading' },
       co2: { value: co2, chartData: dataPoints.co2, status: co2 !== null ? getStatus(co2, { good: 1000, moderate: 2000 }) : 'Loading' },
@@ -127,58 +120,15 @@ export default function DashboardPage() {
       {airQualityData.aqi.value !== null && (
          <AirQualityAlert aqi={airQualityData.aqi.value} isLoading={isDataLoading} />
       )}
+      
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Overall Air Quality</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center gap-6 text-center sm:flex-row sm:gap-12 sm:text-left">
-            {isDataLoading || airQualityData.aqi.value === null ? (
-              <Skeleton className="h-48 w-48 rounded-full" />
-            ) : (
-              <AqiCircle value={airQualityData.aqi.value} />
-            )}
-            <div className="flex-1 space-y-2">
-              <h3 className="text-2xl font-bold">
-                {isDataLoading ? <Skeleton className="h-8 w-48" /> : airQualityData.aqi.status}
-              </h3>
-              <div className="text-muted-foreground">
-                {isDataLoading ? (
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-2/3" />
-                  </div>
-                ) : (
-                  `Live AQI is ${airQualityData.aqi.value}. The air quality is currently considered ${airQualityData.aqi.status.toLowerCase()}.`
-                )}
-              </div>
-            </div>
-            {isDataLoading || airQualityData.purifiedAqi.value === null ? (
-              <div className="flex flex-col items-center justify-center gap-2 rounded-lg p-4 text-center">
-                 <Skeleton className="h-32 w-32 rounded-full" />
-                 <div className='flex flex-col gap-1 items-center w-full'>
-                    <Skeleton className="h-5 w-16" />
-                    <Skeleton className="h-4 w-12" />
-                 </div>
-              </div>
-            ) : (
-              <PurifiedAqiIndicator purifiedAqi={airQualityData.purifiedAqi.value} />
-            )}
-          </CardContent>
-        </Card>
-        <div className="flex flex-col gap-4">
-           <DeviceControlCard />
-           <I2CDisplay 
-            aqi={airQualityData.aqi.value}
-            pm25={airQualityData.pm25.value}
-            temperature={airQualityData.temperature.value}
-            humidity={airQualityData.humidity.value}
-            isLoading={isDataLoading}
-           />
+        <div className="lg:col-span-2">
+            <HarmfulGases isLoading={isDataLoading} co2={airQualityData.co2.value} vocs={airQualityData.voc.value} />
         </div>
+        <DeviceControlCard />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
         <AirQualityCard
           title="PM2.5"
           value={airQualityData.pm25.value}
@@ -211,7 +161,6 @@ export default function DashboardPage() {
           status={airQualityData.humidity.status}
           chartData={airQualityData.humidity.chartData}
         />
-        <HarmfulGases isLoading={isDataLoading} co2={airQualityData.co2.value} vocs={airQualityData.voc.value} />
       </div>
        <div className="grid grid-cols-1 gap-4 lg:grid-cols-5 lg:gap-8">
         <HistoricalDataChart className="lg:col-span-3" sensorId={sensorId} />

@@ -2,9 +2,33 @@
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import UserProfile from '@/components/dashboard/user-profile';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { PanelLeft } from 'lucide-react';
+import { Globe, PanelLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggleButton } from '../theme-toggle';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
+
+function LanguageSwitcher() {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <Globe />
+          <span className="sr-only">Change language</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem>English</DropdownMenuItem>
+        <DropdownMenuItem>Español</DropdownMenuItem>
+        <DropdownMenuItem>Français</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export default function DashboardHeader() {
   const isMobile = useIsMobile();
@@ -21,6 +45,7 @@ export default function DashboardHeader() {
         <h1 className="text-xl font-semibold">Dashboard</h1>
       </div>
       <div className="flex items-center gap-2">
+        <LanguageSwitcher />
         <ThemeToggleButton />
         <UserProfile />
       </div>
