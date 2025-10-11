@@ -23,7 +23,6 @@ import { ChartDataPoint } from '@/lib/types';
 import { useMemo } from 'react';
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
-import { cn } from '@/lib/utils';
 
 interface HarmfulGasesProps {
   isLoading: boolean;
