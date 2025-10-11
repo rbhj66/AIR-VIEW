@@ -18,7 +18,7 @@ export default function I2CDisplay({ aqi, pm25, temperature, humidity, isLoading
 
   return (
     <div className="flex flex-col items-center justify-center gap-1 rounded-md border-2 border-blue-800 bg-[#00008B] p-2 font-mono text-base text-white shadow-inner">
-      <div className="w-full text-left text-xs text-blue-200">Wokwi Display</div>
+      <div className="w-full text-left text-xs text-blue-200">Wokwi I2C Display</div>
       <div className="flex w-full flex-col gap-1 rounded bg-blue-900/50 px-2 py-1 text-sm">
         <div className="flex items-center justify-between">
             <span>AQI:</span>
