@@ -5,7 +5,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Area, AreaChart, Tooltip } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '../ui/chart';
 import type { ChartDataPoint } from '@/lib/types';
-import { AlertTriangle, Wind } from 'lucide-react';
+import { AlertTriangle, FlaskConical, Wind, Thermometer, Droplets, Cloud, Sparkles } from 'lucide-react';
+import { ReactNode } from 'react';
 
 interface GasData {
     value: number | null;
@@ -89,8 +90,8 @@ const GasIndicator = ({
   );
 };
 
-const StaticGasIndicator = ({ name, formula, value, unit }: { name: string; formula: string; value: string; unit: string; }) => (
-    <div className="space-y-2 opacity-60">
+const StaticGasIndicator = ({ name, formula, value, unit, icon }: { name: string; formula: string; value: string; unit: string; icon: ReactNode }) => (
+    <div className="space-y-2">
       <div className="flex justify-between items-baseline">
         <span className="font-semibold">{name}</span>
         <span className="text-sm font-semibold text-foreground">
@@ -98,8 +99,8 @@ const StaticGasIndicator = ({ name, formula, value, unit }: { name: string; form
         </span>
       </div>
       <p className="text-sm text-muted-foreground -mt-2">{formula}</p>
-      <div className="h-20 w-full flex items-center justify-center rounded-md bg-muted/30">
-          <span className="text-xs text-muted-foreground">No live data</span>
+      <div className="h-20 w-full flex items-center justify-center rounded-md bg-muted/30 text-muted-foreground">
+         {icon}
       </div>
     </div>
 );
@@ -115,12 +116,12 @@ export default function HarmfulGases({ isLoading, co2Data, vocsData }: HarmfulGa
         </CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <StaticGasIndicator name="Carbon Dioxide" formula="CO2" value="450" unit="ppm" />
-        <StaticGasIndicator name="Volatile Organic Compounds" formula="VOCs" value="120" unit="ppb" />
-        <StaticGasIndicator name="Particulate Matter 2.5" formula="PM2.5" value="15" unit="μg/m³" />
-        <StaticGasIndicator name="Particulate Matter 10" formula="PM10" value="25" unit="μg/m³" />
-        <StaticGasIndicator name="Ozone" formula="O3" value="0.03" unit="ppm" />
-        <StaticGasIndicator name="Nitrogen Dioxide" formula="NO2" value="0.01" unit="ppm" />
+        <StaticGasIndicator name="Carbon Dioxide" formula="CO2" value="450" unit="ppm" icon={<Cloud className="h-10 w-10" />} />
+        <StaticGasIndicator name="Volatile Organic Compounds" formula="VOCs" value="120" unit="ppb" icon={<FlaskConical className="h-10 w-10" />} />
+        <StaticGasIndicator name="Particulate Matter 2.5" formula="PM2.5" value="15" unit="μg/m³" icon={<Sparkles className="h-10 w-10" />} />
+        <StaticGasIndicator name="Particulate Matter 10" formula="PM10" value="25" unit="μg/m³" icon={<Sparkles className="h-10 w-10 opacity-70" />} />
+        <StaticGasIndicator name="Ozone" formula="O3" value="0.03" unit="ppm" icon={<Wind className="h-10 w-10" />} />
+        <StaticGasIndicator name="Nitrogen Dioxide" formula="NO2" value="0.01" unit="ppm" icon={<FlaskConical className="h-10 w-10 opacity-70" />} />
 
       </CardContent>
     </Card>
