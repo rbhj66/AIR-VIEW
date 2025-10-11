@@ -137,7 +137,10 @@ export default function DashboardPage() {
               </h3>
               <div className="text-muted-foreground">
                 {isLoading ? (
-                  <Skeleton className="h-4 w-full" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
                 ) : (
                   `Live AQI is ${airQualityData.aqi.value}. The air quality is currently considered ${airQualityData.aqi.status.toLowerCase()}.`
                 )}

@@ -19,6 +19,7 @@ const getColor = (value: number) => {
 };
 
 export default function AqiCircle({ value, size = 'md' }: AqiCircleProps) {
+  const percentage = Math.round((value / MAX_AQI) * 100);
   const data = [{ name: 'AQI', value: value, fill: getColor(value) }];
   const chartSize = size === 'md' ? 192 : 128;
   const barSize = size === 'md' ? 20 : 14;
@@ -66,13 +67,13 @@ export default function AqiCircle({ value, size = 'md' }: AqiCircleProps) {
             "font-bold text-foreground drop-shadow-sm",
              size === 'md' ? "text-5xl" : "text-4xl"
             )}>
-          {value}
+          {percentage}%
         </span>
         <span className={cn(
             "font-medium text-muted-foreground leading-tight",
             size === 'md' ? "text-sm" : "text-xs"
             )}>
-          Live AQI
+          AQI Level
         </span>
       </div>
     </div>
