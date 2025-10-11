@@ -42,16 +42,27 @@ const calculateAqi = (pm25: number) => {
   return 201; 
 };
 
+type Metric = 'aqi' | 'pm25' | 'pm10' | 'co2' | 'vocs';
 
-const chartConfig = {
-  aqi: {
-    label: 'AQI',
-    color: 'hsl(var(--primary))',
-  }
-} satisfies ChartConfig;
+const chartConfigs: Record<Metric, ChartConfig> = {
+  aqi: { aqi: { label: 'AQI', color: 'hsl(var(--chart-1))' } },
+  pm25: { pm25: { label: 'PM2.5', color: 'hsl(var(--chart-2))' } },
+  pm10: { pm10: { label: 'PM10', color: 'hsl(var(--chart-3))' } },
+  co2: { co2: { label: 'CO2', color: 'hsl(var(--chart-4))' } },
+  vocs: { vocs: { label: 'VOCs', color: 'hsl(var(--chart-5))' } },
+};
+
+const metricLabels: Record<Metric, string> = {
+  aqi: 'AQI',
+  pm25: 'PM2.5 (μg/m³)',
+  pm10: 'PM10 (μg/m³)',
+  co2: 'CO2 (ppm)',
+  vocs: 'VOCs (ppb)',
+};
 
 export default function HistoricalDataChart({ className, sensorId }: { className?: string, sensorId: string }) {
   const [timeRange, setTimeRange] = useState('30d');
+  const [metric, setMetric] = useState<Metric>('aqi');
   const firestore = useFirestore();
 
   const { data: chartData, isLoading } = useCollection(useMemoFirebase(() => {
@@ -79,28 +90,48 @@ export default function HistoricalDataChart({ className, sensorId }: { className
 
   return (
     <Card className={className}>
-      <CardHeader className="flex-row items-center justify-between">
-        <div>
-          <CardTitle>Historical Air Quality Index (AQI)</CardTitle>
+      <CardHeader className="flex-row items-center justify-between gap-4">
+        <div className='flex-1'>
+          <CardTitle>Historical Air Quality</CardTitle>
           <CardDescription>
-            AQI trends from your sensor over the selected period.
+            Trends for your sensor over the selected period.
           </CardDescription>
         </div>
-        <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger className="w-32">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="7d">Last 7 days</SelectItem>
-            <SelectItem value="30d">Last 30 days</SelectItem>
-            <SelectItem value="90d">Last 90 days</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className='flex items-center gap-2'>
+            <Select value={metric} onValueChange={(value) => setMetric(value as Metric)}>
+                <SelectTrigger className="w-40">
+                    <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="aqi">AQI</SelectItem>
+                    <SelectItem value="pm25">PM2.5</SelectItem>
+                    <SelectItem value="pm10">PM10</SelectItem>
+                    <SelectItem value="co2">CO2</SelectItem>
+                    <SelectItem value="vocs">VOCs</SelectItem>
+                </SelectContent>
+            </Select>
+            <Select value={timeRange} onValueChange={setTimeRange}>
+            <SelectTrigger className="w-32">
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="7d">Last 7 days</SelectItem>
+                <SelectItem value="30d">Last 30 days</SelectItem>
+                <SelectItem value="90d">Last 90 days</SelectItem>
+            </SelectContent>
+            </Select>
+        </div>
       </CardHeader>
       <CardContent>
-        {showSkeleton ? (<div className="h-64 w-full flex items-center justify-center"><Skeleton className="h-full w-full" /></div>
+        {showSkeleton ? (
+            <div className="flex h-64 w-full flex-col items-center justify-center gap-2 rounded-lg bg-muted/30 text-center text-muted-foreground">
+                <p>No data from sensor yet.</p>
+                <p className="text-xs">
+                Make sure the Wokwi simulation is running on the Connectivity page.
+                </p>
+            </div>
         ) : (
-        <ChartContainer config={chartConfig} className="h-64 w-full">
+        <ChartContainer config={chartConfigs[metric]} className="h-64 w-full">
           <AreaChart
             accessibilityLayer
             data={formattedData}
@@ -122,28 +153,29 @@ export default function HistoricalDataChart({ className, sensorId }: { className
               axisLine={false}
               tickMargin={8}
               tickFormatter={(value) => `${value}`}
+              domain={['dataMin', 'dataMax']}
             />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent labelFormatter={(value, payload) => payload[0]?.payload.date} />} />
             <defs>
-              <linearGradient id="fillAqi" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id={`fill${metric}`} x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-aqi)"
+                  stopColor={`var(--color-${metric})`}
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-aqi)"
+                  stopColor={`var(--color-${metric})`}
                   stopOpacity={0.1}
                 />
               </linearGradient>
             </defs>
             <Area
-              dataKey="aqi"
+              dataKey={metric}
               type="natural"
-              fill="url(#fillAqi)"
+              fill={`url(#fill${metric})`}
               fillOpacity={0.4}
-              stroke="var(--color-aqi)"
+              stroke={`var(--color-${metric})`}
               stackId="a"
             />
           </AreaChart>
