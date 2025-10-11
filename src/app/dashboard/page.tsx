@@ -76,6 +76,7 @@ export default function DashboardPage() {
   const { data: readings, isLoading } = useCollection(readingsQuery);
 
   const latestReading = useMemo(() => (readings?.[0] as any) || null, [readings]);
+  const isDataLoading = isLoading || !latestReading;
 
   const airQualityData = useMemo(() => {
     const dataPoints: Record<string, ChartDataPoint[]> = {
@@ -124,7 +125,7 @@ export default function DashboardPage() {
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-6 md:gap-8">
       {airQualityData.aqi.value !== null && (
-         <AirQualityAlert aqi={airQualityData.aqi.value} isLoading={isLoading} />
+         <AirQualityAlert aqi={airQualityData.aqi.value} isLoading={isDataLoading} />
       )}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
         <Card className="lg:col-span-2">
@@ -132,17 +133,17 @@ export default function DashboardPage() {
             <CardTitle>Overall Air Quality</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center gap-6 text-center sm:flex-row sm:gap-12 sm:text-left">
-            {isLoading || airQualityData.aqi.value === null ? (
+            {isDataLoading || airQualityData.aqi.value === null ? (
               <Skeleton className="h-48 w-48 rounded-full" />
             ) : (
               <AqiCircle value={airQualityData.aqi.value} />
             )}
             <div className="flex-1 space-y-2">
               <h3 className="text-2xl font-bold">
-                {isLoading ? <Skeleton className="h-8 w-48" /> : airQualityData.aqi.status}
+                {isDataLoading ? <Skeleton className="h-8 w-48" /> : airQualityData.aqi.status}
               </h3>
               <div className="text-muted-foreground">
-                {isLoading ? (
+                {isDataLoading ? (
                   <div className="space-y-2">
                     <Skeleton className="h-4 w-full" />
                     <Skeleton className="h-4 w-2/3" />
@@ -152,8 +153,14 @@ export default function DashboardPage() {
                 )}
               </div>
             </div>
-            {isLoading || airQualityData.purifiedAqi.value === null ? (
-              <Skeleton className="h-48 w-32" />
+            {isDataLoading || airQualityData.purifiedAqi.value === null ? (
+              <div className="flex flex-col items-center justify-center gap-2 rounded-lg p-4 text-center">
+                 <Skeleton className="h-32 w-32 rounded-full" />
+                 <div className='flex flex-col gap-1 items-center w-full'>
+                    <Skeleton className="h-5 w-16" />
+                    <Skeleton className="h-4 w-12" />
+                 </div>
+              </div>
             ) : (
               <PurifiedAqiIndicator purifiedAqi={airQualityData.purifiedAqi.value} />
             )}
@@ -166,7 +173,7 @@ export default function DashboardPage() {
             pm25={airQualityData.pm25.value}
             temperature={airQualityData.temperature.value}
             humidity={airQualityData.humidity.value}
-            isLoading={isLoading}
+            isLoading={isDataLoading}
            />
         </div>
       </div>
@@ -204,7 +211,7 @@ export default function DashboardPage() {
           status={airQualityData.humidity.status}
           chartData={airQualityData.humidity.chartData}
         />
-        <HarmfulGases isLoading={isLoading} co2={airQualityData.co2.value} vocs={airQualityData.voc.value} />
+        <HarmfulGases isLoading={isDataLoading} co2={airQualityData.co2.value} vocs={airQualityData.voc.value} />
       </div>
        <div className="grid grid-cols-1 gap-4 lg:grid-cols-5 lg:gap-8">
         <HistoricalDataChart className="lg:col-span-3" sensorId={sensorId} />
