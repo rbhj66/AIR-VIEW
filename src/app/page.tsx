@@ -8,7 +8,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Zap, BrainCircuit, SlidersHorizontal, ArrowRight } from 'lucide-react';
+import {
+  Zap,
+  BrainCircuit,
+  SlidersHorizontal,
+  ArrowRight,
+  Mail,
+  Instagram,
+  Phone,
+} from 'lucide-react';
 
 const features = [
   {
@@ -30,6 +38,19 @@ const features = [
       'Remotely control your air purifier, adjust fan speed, and switch modes directly from your dashboard.',
   },
 ];
+
+const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    {...props}
+  >
+    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.487 5.235 3.487 8.413.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.89-5.451 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.95 5.688l-1.42 5.179 5.333-1.397z" />
+  </svg>
+);
 
 export default function WelcomePage() {
   return (
@@ -147,8 +168,22 @@ export default function WelcomePage() {
           </div>
         </section>
       </main>
-      <footer className="flex items-center justify-center p-4 text-sm text-muted-foreground">
-        © {new Date().getFullYear()} AirView. All rights reserved.
+      <footer className="flex flex-col items-center justify-center gap-4 p-6 text-sm text-muted-foreground">
+        <div className="flex gap-4">
+          <Link href="mailto:youremail@example.com" className="hover:text-primary">
+            <Mail />
+          </Link>
+          <Link href="https://instagram.com/yourhandle" target="_blank" className="hover:text-primary">
+            <Instagram />
+          </Link>
+          <Link href="https://wa.me/yourphonenumber" target="_blank" className="hover:text-primary">
+            <WhatsAppIcon className="h-6 w-6" />
+          </Link>
+          <Link href="tel:yourphonenumber" className="hover:text-primary">
+            <Phone />
+          </Link>
+        </div>
+        <div>© {new Date().getFullYear()} AirView. All rights reserved.</div>
       </footer>
     </div>
   );
