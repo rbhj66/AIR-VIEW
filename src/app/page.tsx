@@ -169,21 +169,7 @@ export default function WelcomePage() {
         </section>
       </main>
       <footer className="flex flex-col items-center justify-center gap-4 p-6 text-sm text-muted-foreground">
-        <div className="flex gap-4">
-          <Link href="mailto:youremail@example.com" className="hover:text-primary">
-            <Mail />
-          </Link>
-          <Link href="https://instagram.com/yourhandle" target="_blank" className="hover:text-primary">
-            <Instagram />
-          </Link>
-          <Link href="https://wa.me/yourphonenumber" target="_blank" className="hover:text-primary">
-            <WhatsAppIcon className="h-6 w-6" />
-          </Link>
-          <Link href="tel:yourphonenumber" className="hover:text-primary">
-            <Phone />
-          </Link>
-        </div>
-        <div>© {new Date().getFullYear()} AirView. All rights reserved.</div>
+        <div>Crafted with ❤️ for a breath of fresh air.</div>
       </footer>
     </div>
   );
