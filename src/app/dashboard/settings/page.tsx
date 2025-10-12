@@ -34,7 +34,7 @@ export default function SettingsPage() {
   const auth = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const [areNotificationsEnabled, setAreNotificationsEnabled] = useState(true);
+  const [areSmsNotificationsEnabled, setAreSmsNotificationsEnabled] = useState(true);
 
   const userProfileRef = useMemoFirebase(() => {
     if (!user || !firestore) return null;
@@ -57,9 +57,9 @@ export default function SettingsPage() {
       setValue('displayName', user.displayName);
     }
     // Check local storage for notification settings
-    const storedNotificationPref = localStorage.getItem('notificationsEnabled');
+    const storedNotificationPref = localStorage.getItem('smsNotificationsEnabled');
     if (storedNotificationPref !== null) {
-      setAreNotificationsEnabled(JSON.parse(storedNotificationPref));
+      setAreSmsNotificationsEnabled(JSON.parse(storedNotificationPref));
     }
   }, [user, setValue]);
 
@@ -90,14 +90,14 @@ export default function SettingsPage() {
     }
   };
 
-  const handleNotificationChange = (enabled: boolean) => {
-    setAreNotificationsEnabled(enabled);
-    localStorage.setItem('notificationsEnabled', JSON.stringify(enabled));
+  const handleSmsNotificationChange = (enabled: boolean) => {
+    setAreSmsNotificationsEnabled(enabled);
+    localStorage.setItem('smsNotificationsEnabled', JSON.stringify(enabled));
     toast({
-      title: `Notifications ${enabled ? 'Enabled' : 'Disabled'}`,
+      title: `SMS Notifications ${enabled ? 'Enabled' : 'Disabled'}`,
       description: `You will ${
         enabled ? '' : 'no longer '
-      }receive air quality alerts.`,
+      }receive automatic SMS alerts for high AQI.`,
     });
   };
 
@@ -174,14 +174,14 @@ export default function SettingsPage() {
             <CardContent>
               <div className="flex items-center justify-between rounded-lg border p-4">
                 <div>
-                  <p className="font-medium">Air Quality Alerts</p>
+                  <p className="font-medium">Automatic SMS Alerts</p>
                   <p className="text-sm text-muted-foreground">
-                    Receive alerts when AQI is high.
+                    Receive SMS alerts when AQI is high.
                   </p>
                 </div>
                 <Switch
-                  checked={areNotificationsEnabled}
-                  onCheckedChange={handleNotificationChange}
+                  checked={areSmsNotificationsEnabled}
+                  onCheckedChange={handleSmsNotificationChange}
                 />
               </div>
             </CardContent>
@@ -217,5 +217,3 @@ export default function SettingsPage() {
     </main>
   );
 }
-
-    

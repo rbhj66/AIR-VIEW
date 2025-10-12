@@ -2,7 +2,7 @@
 
 import { useToast } from '@/hooks/use-toast';
 import { AlertTriangle } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 
@@ -24,6 +24,14 @@ export default function AirQualityAlert({
   const { toast } = useToast();
   const audioRef = useRef<HTMLAudioElement>(null);
   const isAlertActive = useRef(false);
+  const [smsEnabled, setSmsEnabled] = useState(true);
+
+  useEffect(() => {
+    const storedPref = localStorage.getItem('smsNotificationsEnabled');
+    if (storedPref !== null) {
+      setSmsEnabled(JSON.parse(storedPref));
+    }
+  }, []);
 
   useEffect(() => {
     if (isLoading || isProfileLoading) {
@@ -50,13 +58,13 @@ export default function AirQualityAlert({
       });
 
       // 3. Automatic Simulated SMS Notification
-      if (phoneNumber) {
+      if (phoneNumber && smsEnabled) {
         toast({
           title: "Automatic SMS Notification Sent",
           description: `An alert for high AQI (${aqi}) has been sent to ${phoneNumber}.`,
           duration: 10000,
         });
-      } else {
+      } else if (smsEnabled) {
          toast({
             variant: "default",
             title: "Enable Automatic SMS Alerts",
@@ -73,7 +81,7 @@ export default function AirQualityAlert({
     } else if (aqi < ALERT_THRESHOLD && isAlertActive.current) {
       isAlertActive.current = false; // Reset the alert
     }
-  }, [aqi, isLoading, isProfileLoading, phoneNumber, toast]);
+  }, [aqi, isLoading, isProfileLoading, phoneNumber, smsEnabled, toast]);
 
   return (
     // The audio element is hidden but available to be played.

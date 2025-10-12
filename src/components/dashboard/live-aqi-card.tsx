@@ -134,7 +134,7 @@ export default function LiveAqiCard({ isLoading, pm25 }: LiveAqiCardProps) {
         <p className="text-lg font-bold">{status}</p>
         <div className="flex gap-2">
             <Button onClick={handleManualAlert} variant="outline" size="sm" disabled={isProfileLoading}>
-                <Bell className="mr-2 h-4 w-4" /> Trigger SMS
+                <Bell className="mr-2 h-4 w-4" /> Trigger Manual SMS
             </Button>
             <TooltipProvider>
                 <Tooltip>
