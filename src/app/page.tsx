@@ -2,6 +2,34 @@ import AppLogo from '@/components/app-logo';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import FreshAirDiagram from '@/components/dashboard/fresh-air-diagram';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Zap, BrainCircuit, SlidersHorizontal, ArrowRight } from 'lucide-react';
+
+const features = [
+  {
+    icon: <Zap className="h-8 w-8 text-primary" />,
+    title: 'Real-time AQI Tracking',
+    description:
+      'Monitor live air quality data from your connected sensors, including PM2.5, CO2, and VOC levels.',
+  },
+  {
+    icon: <BrainCircuit className="h-8 w-8 text-primary" />,
+    title: 'AI-Powered Predictions',
+    description:
+      'Leverage AI to forecast future air quality and receive intelligent recommendations for your air purifier.',
+  },
+  {
+    icon: <SlidersHorizontal className="h-8 w-8 text-primary" />,
+    title: 'Smart Device Control',
+    description:
+      'Remotely control your air purifier, adjust fan speed, and switch modes directly from your dashboard.',
+  },
+];
 
 export default function WelcomePage() {
   return (
@@ -46,6 +74,74 @@ export default function WelcomePage() {
                   Fresh Air Diagram
                 </h3>
                 <FreshAirDiagram />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="features" className="w-full bg-muted py-12 md:py-24">
+          <div className="container px-4 md:px-6">
+            <h2 className="mb-12 text-center text-3xl font-bold tracking-tighter sm:text-4xl">
+              Features at a Glance
+            </h2>
+            <div className="mx-auto grid max-w-5xl items-center gap-6 md:grid-cols-3 md:gap-8">
+              {features.map((feature) => (
+                <Card
+                  key={feature.title}
+                  className="flex h-full flex-col items-center text-center"
+                >
+                  <CardHeader className="items-center">
+                    <div className="rounded-full bg-primary/10 p-4">
+                      {feature.icon}
+                    </div>
+                    <CardTitle>{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="how-it-works" className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <h2 className="mb-12 text-center text-3xl font-bold tracking-tighter sm:text-4xl">
+              How It Works
+            </h2>
+            <div className="relative mx-auto flex max-w-4xl flex-col items-center justify-between gap-12 md:flex-row md:gap-8">
+              <div className="absolute left-0 top-1/2 hidden h-1 w-full -translate-y-1/2 bg-border md:block"></div>
+              <div className="relative flex flex-col items-center gap-2 text-center">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-primary bg-background text-2xl font-bold text-primary">
+                  1
+                </div>
+                <h3 className="font-semibold">Connect Sensor</h3>
+                <p className="max-w-[200px] text-sm text-muted-foreground">
+                  Link the Wokwi sensor simulation to your Firebase project.
+                </p>
+              </div>
+              <ArrowRight className="h-8 w-8 rotate-90 text-muted-foreground md:hidden" />
+              <div className="relative flex flex-col items-center gap-2 text-center">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-primary bg-background text-2xl font-bold text-primary">
+                  2
+                </div>
+                <h3 className="font-semibold">Stream Data</h3>
+                <p className="max-w-[200px] text-sm text-muted-foreground">
+                  The ESP32 sends live sensor readings to Firestore in real-time.
+                </p>
+              </div>
+               <ArrowRight className="h-8 w-8 rotate-90 text-muted-foreground md:hidden" />
+              <div className="relative flex flex-col items-center gap-2 text-center">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-primary bg-background text-2xl font-bold text-primary">
+                  3
+                </div>
+                <h3 className="font-semibold">Visualize & Control</h3>
+                <p className="max-w-[200px] text-sm text-muted-foreground">
+                  View live data on your dashboard and control your devices.
+                </p>
               </div>
             </div>
           </div>
