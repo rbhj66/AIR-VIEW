@@ -96,7 +96,11 @@ export default function ConnectivityPage() {
         setMockTick(tick => tick + 1);
       }, 2000);
     }
-    return () => clearInterval(interval);
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, [isDataAvailable]);
 
 
@@ -297,5 +301,4 @@ export default function ConnectivityPage() {
       </Card>
     </main>
   );
-
-    
+}
