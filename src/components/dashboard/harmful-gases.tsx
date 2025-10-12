@@ -16,7 +16,7 @@ import {
   DialogTrigger,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { FlaskConical, Cloud, Virus } from 'lucide-react';
+import { FlaskConical, Cloud, Bug } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { ChartContainer } from '../ui/chart';
 import { Area, AreaChart } from 'recharts';
@@ -240,7 +240,7 @@ export default function HarmfulGases({
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                    <Virus className="h-6 w-6 text-primary" />
+                    <Bug className="h-6 w-6 text-primary" />
                   </div>
                    <div className="flex-1 space-y-1">
                     <p className="font-semibold text-muted-foreground">Viruses</p>
