@@ -16,7 +16,7 @@ import {
   DialogTrigger,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { FlaskConical, Cloud } from 'lucide-react';
+import { FlaskConical, Cloud, Virus } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { ChartContainer } from '../ui/chart';
 import { Area, AreaChart } from 'recharts';
@@ -42,71 +42,6 @@ const getStatus = (
   return 'Poor';
 };
 
-const O2Icon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="h-6 w-6 text-primary"
-  >
-    <path d="M12 2a10 10 0 1 0 10 10" />
-    <path d="M12 2a10 10 0 1 0-10 10" />
-    <path d="m13 14-4-4" />
-    <path d="m9 14 4-4" />
-    <path d="M15.5 13a.5.5 0 0 0 0-1" />
-    <path d="M15.5 13a.5.5 0 0 1 0-1" />
-    <path d="M18.5 16.5a.5.5 0 0 0 0-1" />
-    <path d="M18.5 16.5a.5.5 0 0 1 0-1" />
-  </svg>
-);
-
-const MiniChart = ({ data }: { data: ChartDataPoint[] }) => {
-  const chartData = useMemo(() => {
-    if (data.length === 0) {
-      // Provide some dummy data for skeleton
-      return Array.from({ length: 10 }, (_, i) => ({
-        time: i.toString(),
-        value: 0,
-      }));
-    }
-    return data;
-  }, [data]);
-
-  return (
-    <ChartContainer config={{}} className="h-10 w-full">
-      <AreaChart accessibilityLayer data={chartData}>
-        <defs>
-          <linearGradient id="mini-chart-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop
-              offset="5%"
-              stopColor="var(--color-chart-1)"
-              stopOpacity={0.4}
-            />
-            <stop
-              offset="95%"
-              stopColor="var(--color-chart-1)"
-              stopOpacity={0.1}
-            />
-          </linearGradient>
-        </defs>
-        <Area
-          dataKey="value"
-          type="natural"
-          fill="url(#mini-chart-fill)"
-          stroke="var(--color-chart-1)"
-          strokeWidth={2}
-        />
-      </AreaChart>
-    </ChartContainer>
-  );
-};
-
 const levels = {
   co2: [
     { level: 'Good', range: '< 1000 ppm', description: 'Normal, well-ventilated spaces.' },
@@ -119,6 +54,48 @@ const levels = {
     { level: 'Poor', range: '> 500 ppb', description: 'Can cause eye, nose, and throat irritation, and headaches.' },
   ],
 };
+
+const MiniChart = ({ data, color }: { data: ChartDataPoint[], color: string }) => {
+  const chartData = useMemo(() => {
+    if (data.length === 0) {
+      // Provide some dummy data for skeleton
+      return Array.from({ length: 10 }, (_, i) => ({
+        time: i.toString(),
+        value: 0,
+      }));
+    }
+    return data;
+  }, [data]);
+
+  return (
+    <ChartContainer config={{}} className="h-[70px] w-full -ml-4 -mr-2 -mb-4">
+      <AreaChart accessibilityLayer data={chartData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+        <defs>
+          <linearGradient id={`mini-chart-fill-${color}`} x1="0" y1="0" x2="0" y2="1">
+            <stop
+              offset="5%"
+              stopColor={`var(--color-${color})`}
+              stopOpacity={0.4}
+            />
+            <stop
+              offset="95%"
+              stopColor={`var(--color-${color})`}
+              stopOpacity={0.1}
+            />
+          </linearGradient>
+        </defs>
+        <Area
+          dataKey="value"
+          type="natural"
+          fill={`url(#mini-chart-fill-${color})`}
+          stroke={`var(--color-${color})`}
+          strokeWidth={2}
+        />
+      </AreaChart>
+    </ChartContainer>
+  );
+};
+
 
 export default function HarmfulGases({
   isLoading,
@@ -140,7 +117,7 @@ export default function HarmfulGases({
       <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Dialog>
           <DialogTrigger asChild>
-            <div className="cursor-pointer flex flex-col justify-between gap-4 rounded-lg bg-muted/30 p-4 transition-all hover:ring-2 hover:ring-primary">
+            <div className="cursor-pointer overflow-hidden flex flex-col justify-between gap-4 rounded-lg bg-muted/30 p-4 transition-all hover:ring-2 hover:ring-primary">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                   <Cloud className="h-6 w-6 text-primary" />
@@ -158,13 +135,13 @@ export default function HarmfulGases({
                 </div>
               </div>
               {isLoading ? (
-                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-[70px] w-full" />
               ) : (
-                <MiniChart data={co2.history} />
+                <MiniChart data={co2.history} color="chart-1" />
               )}
             </div>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Carbon Dioxide (CO₂) Information</DialogTitle>
               <DialogDescription>
@@ -173,10 +150,13 @@ export default function HarmfulGases({
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
-              <p>Current Reading: <Badge variant="secondary">{co2.value} ppm</Badge></p>
+               <div className="h-48 w-full">
+                <MiniChart data={co2.history} color="chart-1" />
+              </div>
+              <p>Current Reading: <Badge variant="secondary">{co2.value} ppm ({co2Status})</Badge></p>
               <Separator />
               <h4 className="font-semibold">Health Guidelines</h4>
-               <ul className="space-y-2">
+               <ul className="space-y-2 text-sm">
                 {levels.co2.map(item => (
                   <li key={item.level}><Badge variant="outline">{item.level}</Badge> ({item.range}): {item.description}</li>
                 ))}
@@ -198,7 +178,7 @@ export default function HarmfulGases({
         </Dialog>
         <Dialog>
           <DialogTrigger asChild>
-            <div className="cursor-pointer flex flex-col justify-between gap-4 rounded-lg bg-muted/30 p-4 transition-all hover:ring-2 hover:ring-primary">
+            <div className="cursor-pointer overflow-hidden flex flex-col justify-between gap-4 rounded-lg bg-muted/30 p-4 transition-all hover:ring-2 hover:ring-primary">
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                   <FlaskConical className="h-6 w-6 text-primary" />
@@ -216,13 +196,13 @@ export default function HarmfulGases({
                 </div>
               </div>
               {isLoading ? (
-                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-[70px] w-full" />
               ) : (
-                <MiniChart data={vocs.history} />
+                <MiniChart data={vocs.history} color="chart-2" />
               )}
             </div>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-lg">
              <DialogHeader>
               <DialogTitle>Volatile Organic Compounds (VOCs)</DialogTitle>
               <DialogDescription>
@@ -230,10 +210,13 @@ export default function HarmfulGases({
               </DialogDescription>
             </DialogHeader>
              <div className="space-y-4">
-              <p>Current Reading: <Badge variant="secondary">{vocs.value} ppb</Badge></p>
+              <div className="h-48 w-full">
+                <MiniChart data={vocs.history} color="chart-2" />
+              </div>
+              <p>Current Reading: <Badge variant="secondary">{vocs.value} ppb ({vocsStatus})</Badge></p>
               <Separator />
               <h4 className="font-semibold">Health Guidelines</h4>
-              <ul className="space-y-2">
+              <ul className="space-y-2 text-sm">
                 {levels.vocs.map(item => (
                   <li key={item.level}><Badge variant="outline">{item.level}</Badge> ({item.range}): {item.description}</li>
                 ))}
@@ -257,39 +240,39 @@ export default function HarmfulGases({
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                    <O2Icon />
+                    <Virus className="h-6 w-6 text-primary" />
                   </div>
                    <div className="flex-1 space-y-1">
-                    <p className="font-semibold text-muted-foreground">O₂</p>
-                    {isLoading ? (
-                        <Skeleton className="h-7 w-20" />
-                    ) : (
-                        <p className="text-2xl font-bold">
-                        20.9 <span className="text-lg font-medium text-muted-foreground">%</span>
-                        </p>
-                    )}
-                    <Badge variant="outline">Normal</Badge>
+                    <p className="font-semibold text-muted-foreground">Viruses</p>
+                    <p className="text-2xl font-bold">Info</p>
+                    <Badge variant="outline">Learn More</Badge>
                   </div>
                 </div>
               </div>
-                <div className="h-10 w-full" /> 
+              <div className="h-[70px] w-full" /> 
             </div>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-lg">
              <DialogHeader>
-              <DialogTitle>Oxygen (O₂)</DialogTitle>
+              <DialogTitle>Airborne Viruses & Pathogens</DialogTitle>
               <DialogDescription>
-                Oxygen is essential for life. Earth's atmosphere is about 21% oxygen.
+                Good ventilation and air purification can help reduce the concentration of airborne pathogens like viruses (e.g., influenza, COVID-19).
               </DialogDescription>
             </DialogHeader>
              <div className="space-y-4">
-                <p>Normal Level: <Badge variant="secondary">~20.9%</Badge></p>
                 <Separator />
-                <h4 className="font-semibold">Information</h4>
-                <p className='text-sm text-muted-foreground'>Indoor oxygen levels are typically stable and very close to outdoor levels. Significant drops are rare in normal residential environments. This reading is a standard placeholder, as most consumer-grade air quality sensors do not measure oxygen.</p>
+                <h4 className="font-semibold">How it Spreads</h4>
+                <p className='text-sm text-muted-foreground'>Viruses can travel on tiny airborne particles (aerosols) that are released when people breathe, talk, or cough. In poorly ventilated areas, these aerosols can remain suspended in the air for hours, increasing the risk of transmission.</p>
                 <Separator />
                 <h4 className="font-semibold">Impact on Children</h4>
-                <p className='text-sm text-muted-foreground'>Normal oxygen levels are critical for healthy development. Ensuring good overall air quality and ventilation helps maintain these levels.</p>
+                <p className='text-sm text-muted-foreground'>Children, especially in group settings like schools and daycares, are highly susceptible to respiratory viruses. Their immune systems are still developing, and they tend to have closer contact, increasing transmission risk.</p>
+                <Separator />
+                <h4 className="font-semibold">Recommendations</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
+                    <li><span className="font-semibold">Increase Ventilation:</span> Open windows and doors to bring in fresh outdoor air.</li>
+                    <li><span className="font-semibold">Use Air Purifiers:</span> Run a purifier with a HEPA filter, which is effective at capturing virus-sized particles.</li>
+                    <li><span className="font-semibold">Control Humidity:</span> Maintain indoor humidity between 40-60%. Viruses survive less effectively in this range.</li>
+                </ul>
             </div>
           </DialogContent>
         </Dialog>
