@@ -9,6 +9,7 @@ import HistoricalDataChart from '@/components/dashboard/historical-data-chart';
 import LiveAqiCard from '@/components/dashboard/live-aqi-card';
 import TemperatureAndHumidity from '@/components/dashboard/temperature-and-humidity';
 import HistoricalSummary from '@/components/dashboard/historical-summary';
+import FingerprintScanner from '@/components/dashboard/fingerprint-scanner';
 
 export default function DashboardPage() {
   const firestore = useFirestore();
@@ -128,13 +129,14 @@ export default function DashboardPage() {
           className="lg:col-span-2"
         />
       </div>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
         <TemperatureAndHumidity
           isLoading={airQualityData.isLoading}
           temperature={airQualityData.temperature}
           humidity={airQualityData.humidity}
         />
         <HistoricalSummary sensorId={sensorId} />
+        <FingerprintScanner pm25={airQualityData.pm25.value} />
       </div>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-1 lg:gap-8">
         <HistoricalDataChart sensorId={sensorId} />
