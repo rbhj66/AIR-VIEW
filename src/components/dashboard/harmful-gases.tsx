@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -256,7 +255,7 @@ export default function HarmfulGases({
              <DialogHeader>
               <DialogTitle>Airborne Viruses & Pathogens</DialogTitle>
               <DialogDescription>
-                Good ventilation and air purification can help reduce the concentration of airborne pathogens like viruses (e.g., influenza, COVID-19).
+                Good ventilation and air purification can help reduce the concentration of airborne pathogens.
               </DialogDescription>
             </DialogHeader>
              <div className="space-y-4">
@@ -266,6 +265,14 @@ export default function HarmfulGases({
                 <Separator />
                 <h4 className="font-semibold">Impact on Children</h4>
                 <p className='text-sm text-muted-foreground'>Children, especially in group settings like schools and daycares, are highly susceptible to respiratory viruses. Their immune systems are still developing, and they tend to have closer contact, increasing transmission risk.</p>
+                 <Separator />
+                <h4 className="font-semibold">Examples of Common Airborne Viruses</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
+                    <li><span className="font-semibold">Influenza (Flu):</span> Causes seasonal epidemics, with symptoms like fever, cough, and body aches. Children are major transmitters.</li>
+                    <li><span className="font-semibold">Rhinovirus (Common Cold):</span> The most frequent cause of the common cold. It spreads easily in schools and homes.</li>
+                    <li><span className="font-semibold">Coronaviruses (e.g., COVID-19):</span> Can cause severe respiratory illness. Known for its high transmission rate via airborne particles in indoor settings.</li>
+                    <li><span className="font-semibold">Respiratory Syncytial Virus (RSV):</span> A common cause of severe respiratory illness in infants and young children.</li>
+                </ul>
                 <Separator />
                 <h4 className="font-semibold">Recommendations</h4>
                 <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
