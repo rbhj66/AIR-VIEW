@@ -168,7 +168,29 @@ export default function WelcomePage() {
           </div>
         </section>
       </main>
-      <footer className="flex flex-col items-center justify-center gap-4 p-6 text-sm text-muted-foreground">
+      <footer className="flex flex-col items-center justify-center gap-4 bg-muted p-6 text-sm text-muted-foreground">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="mailto:info@airview.com">
+              <Mail />
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="https://instagram.com/airview">
+              <Instagram />
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="https://wa.me/1234567890">
+              <WhatsAppIcon />
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="tel:+1234567890">
+              <Phone />
+            </Link>
+          </Button>
+        </div>
         <div>Crafted with ❤️ for a breath of fresh air.</div>
       </footer>
     </div>
